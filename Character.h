@@ -3,6 +3,7 @@
 
 #include <string>
 #include "Position.h"
+#include "Stats.h"
 
 using namespace std;
 
@@ -14,6 +15,7 @@ class MainCharacter {
 		const int maxHealth = 10;
 		const int doomLimit = 50;
 		int inventory[5];
+		Stats stats;
 
 	public:
 		MainCharacter(){
@@ -32,6 +34,16 @@ class MainCharacter {
 		Position getMCPosition() const;
 		void takeDamage(int damage);
     	int attack() const;
+
+		int getStrength() const { return stats.getStrength(); }
+    	int getIntelligence() const { return stats.getIntelligence(); }
+    	int getAgility() const { return stats.getAgility(); }
+    	int getLuck() const { return stats.getLuck(); }
+
+		void setStrength(int str) { stats.setStrength(str); }
+    	void setIntelligence(int intl) { stats.setIntelligence(intl); }
+    	void setAgility(int agi) { stats.setAgility(agi); }
+    	void setLuck(int lck) { stats.setLuck(lck); }
 
 };
 
