@@ -27,7 +27,7 @@ void Enemy::moveTowards(Position mcPosition, Enemy* enemies, int numEnemies) {
     }
 
     // Move only if there is no collision
-    if (!collision && (newPosition.x != mcPosition.x || newPosition.y != mcPosition.y)) {
+    if (!collision) {
         position = newPosition;
     }
 }
