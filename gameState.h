@@ -15,6 +15,7 @@ private:
     char map[10][20]; // The map
     MainCharacter player; // The player
     Enemy enemy[MAX_ENTITY]; // The enemies
+    void* playerSprite;
 
 public:
     gameState();
@@ -23,7 +24,8 @@ public:
     void updateViewport();
     void displayHUD();
     void gameLoop();
-    void battleScreen(Enemy& enemy, MainCharacter& player); // Ensure this declaration is present
+    void battleScreen(Enemy& enemy, MainCharacter& player);
+    void loadSprites();
 };
 
 #endif // GAMESTATE_H

@@ -1,8 +1,8 @@
 #include "Character.h"
 
 MainCharacter::MainCharacter(int x, int y) {
-    position.x = 1;
-    position.y = 1;
+    position.x = x;
+    position.y = y;
     health = maxHealth;
     doomCounter = 0;
 	for (int i = 0; i < 5; ++i) {

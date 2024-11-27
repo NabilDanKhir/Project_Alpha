@@ -25,6 +25,17 @@ gameState::gameState() : player(1, 1) { // Initialize player at position (1, 1)
     for (int i = 1; i < MAX_ENTITY; ++i) {
         enemy[i] = Enemy(0, 0);  // Initialize remaining enemies off-map
     }
+
+    loadSprites();
+}
+
+void gameState::loadSprites() {
+    
+    readimagefile("player.bmp", 0, 0, 16, 16);
+    int size = imagesize(0, 0, 16, 16);
+    playerSprite = malloc(size);
+    getimage(0, 0, 16, 16, playerSprite);
+    cleardevice();
 }
 
 void gameState::drawMap() {
@@ -34,7 +45,7 @@ void gameState::drawMap() {
         for (int x = 0; x < viewportWidth; x++) {
             int mapX = viewportX + x;
             int mapY = viewportY + y;
-            if (mapY < 10 && mapX < 20) { // Ensure within bounds
+            if (mapY < 20 && mapX < 20) { // Ensure within bounds
                 char symbol[2] = { map[mapY][mapX], '\0' };
                 outtextxy(x * cellSize, y * cellSize, symbol);
             }
@@ -54,9 +65,8 @@ void gameState::drawMap() {
     }
 
     // Draw player
-    char playerSymbol[2] = { 'P', '\0' };
     Position mcPos = player.getMCPosition();
-    outtextxy((mcPos.x - viewportX) * cellSize, (mcPos.y - viewportY) * cellSize, playerSymbol);
+    putimage((mcPos.x - viewportX) * cellSize, (mcPos.y - viewportY) * cellSize, playerSprite, COPY_PUT);
 }
 
 void gameState::displayHUD() {
