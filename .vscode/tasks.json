@@ -11,7 +11,6 @@
                 "${workspaceFolder}/gameState.cpp",
                 "${workspaceFolder}/Character.cpp",
                 "${workspaceFolder}/Enemy.cpp",
-                "${workspaceFolder}/Stats.cpp",
                 "-o",
                 "${workspaceFolder}/TheDescent.exe",
                 "-lbgi",
