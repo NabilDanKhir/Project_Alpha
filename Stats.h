@@ -26,7 +26,7 @@ public:
     void allocateInitialPoints();
     void displayStats() const;
 
-    bool Stats::allocatePointToStat(const std::string& statName) {
+    bool allocatePointToStat(const std::string& statName) {
     if (availablePoints <= 0) {
         return false; // No points available to allocate
     }
