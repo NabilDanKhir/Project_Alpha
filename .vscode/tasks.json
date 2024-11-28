@@ -7,28 +7,26 @@
             "command": "g++",
             "args": [
                 "-g",
-                "C:/Users/hdabl/OneDrive/Desktop/TheDescend/TheDescent.cpp",
-                "C:/Users/hdabl/OneDrive/Desktop/TheDescend/gameState.cpp",
-                "C:/Users/hdabl/OneDrive/Desktop/TheDescend/Character.cpp",
-                "C:/Users/hdabl/OneDrive/Desktop/TheDescend/Enemy.cpp",
+                "${workspaceFolder}/TheDescent.cpp",
+                "${workspaceFolder}/gameState.cpp",
+                "${workspaceFolder}/Character.cpp",
+                "${workspaceFolder}/Enemy.cpp",
+                "${workspaceFolder}/Stats.cpp",
                 "-o",
-                "C:/Users/hdabl/OneDrive/Desktop/TheDescend/TheDescent.exe",
+                "${workspaceFolder}/TheDescent.exe",
                 "-lbgi",
                 "-lgdi32",
                 "-lcomdlg32",
                 "-luuid",
                 "-loleaut32",
                 "-lole32"
-
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "detail": "Generated task to build the project"
+            "problemMatcher": ["$gcc"],
+            "detail": "Generated task by user"
         }
     ]
 }
