@@ -35,6 +35,8 @@ class MainCharacter {
 		void takeDamage(int damage);
     	int attack() const;
 
+		
+
 		int getStrength() const { return stats.getStrength(); }
     	int getIntelligence() const { return stats.getIntelligence(); }
     	int getAgility() const { return stats.getAgility(); }
@@ -44,6 +46,8 @@ class MainCharacter {
     	void setIntelligence(int intl) { stats.setIntelligence(intl); }
     	void setAgility(int agi) { stats.setAgility(agi); }
     	void setLuck(int lck) { stats.setLuck(lck); }
+		void allocateInitialPoints();
+		void displayStats() const;
 
 };
 

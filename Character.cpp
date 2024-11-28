@@ -1,6 +1,9 @@
 #include "Character.h"
+#include <iostream>
+#include <limits>
 
-MainCharacter::MainCharacter(int x, int y) {
+MainCharacter::MainCharacter(int x, int y) 
+{
     position.x = x;
     position.y = y;
     health = maxHealth;
@@ -9,6 +12,36 @@ MainCharacter::MainCharacter(int x, int y) {
 		inventory[i] = 0;
 	}
     // Initialize inventory or other members if necessary
+	stats = Stats(1, 1, 1, 1, 5);
+
+	allocateInitialPoints();
+}
+
+void MainCharacter::allocateInitialPoints() 
+{
+    std::cout << "Hello Ethan, what do you know about yourself " << stats.getAvailablePoints() << endl;
+			  
+    while (stats.getAvailablePoints() > 0) {
+        displayStats();
+		std::cout << "Enter the stat to increase (strength, intelligence, agility, luck): ";
+        std::string statName;
+        std::cin >> statName;
+	if (!stats.allocatePointToStat(statName)) {
+            std::cout << "Invalid stat name. Try again.\n";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+    }
+	std::cout << "Final stats:\n";
+    displayStats();
+}
+
+void MainCharacter::displayStats() const {
+    std::cout << "Strength: " << stats.getStrength() << "\n";
+    std::cout << "Intelligence: " << stats.getIntelligence() << "\n";
+    std::cout << "Agility: " << stats.getAgility() << "\n";
+    std::cout << "Luck: " << stats.getLuck() << "\n";
+    std::cout << "Points remaining: " << stats.getAvailablePoints() << "\n";
 }
 
 void MainCharacter::move(int mcx, int mcy) {
@@ -47,11 +80,29 @@ Position MainCharacter::getMCPosition() const {
 }
 
 void MainCharacter::takeDamage(int damage) {
+	int luck = stats.getLuck();
+	if (std::rand() % 100 < luck) {
+        // Damage avoided
+        return;
+    }
+
     health -= damage;
     if (health < 0) health = 0;
 }
 
 int MainCharacter::attack() const {
     // Implement attack logic
-    return 10; // Example attack value
+      int baseDamage = stats.getStrength();
+	  int luckBonus = stats.getLuck() / 1;
+	  int totalDamage = baseDamage + luckBonus;
+	  
+	  int randomFactor = std::rand() % 5;
+	  totalDamage += randomFactor;
+	  
+	  if (std::rand() % 100 < stats.getLuck()) 
+	  {
+		totalDamage *= 2;
+	  }
+
+	  return totalDamage;
 }
