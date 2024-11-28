@@ -7,6 +7,10 @@ class Enemy {
 private:
 	Position position;
 	int health;
+	
+	//Boss
+	int positionX, positionY;
+
 
 public:
 	Enemy(){
@@ -18,8 +22,16 @@ public:
 	void moveTowards(Position mcPosition, Enemy* enemies, int numEnemies);
 	bool isAlive() const;
 	Position getPosition() const;
+	Position setPosition() const;
 	void takeDamage(int damage);
     int attack() const;
+
+	//BOSS (NEW)
+	void setBossPosition(int x, int y){
+		positionX = x;
+        positionY = y;
+	}
+
 };
 #endif // !ENEMY_H
 

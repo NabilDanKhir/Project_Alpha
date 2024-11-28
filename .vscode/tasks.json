@@ -7,18 +7,19 @@
             "command": "g++",
             "args": [
                 "-g",
-                "C:/Users/nabil/source/repos/Project_Alpha/TheDescent.cpp",
-                "C:/Users/nabil/source/repos/Project_Alpha/gameState.cpp",
-                "C:/Users/nabil/source/repos/Project_Alpha/Character.cpp",
-                "C:/Users/nabil/source/repos/Project_Alpha/Enemy.cpp",
+                "C:/Users/hdabl/OneDrive/Documents/GitHub/Project_Alpha/TheDescent.cpp",
+                "C:/Users/hdabl/OneDrive/Documents/GitHub/Project_Alpha/gameState.cpp",
+                "C:/Users/hdabl/OneDrive/Documents/GitHub/Project_Alpha/Character.cpp",
+                "C:/Users/hdabl/OneDrive/Documents/GitHub/Project_Alpha/Enemy.cpp",
                 "-o",
-                "C:/Users/nabil/source/repos/Project_Alpha/TheDescent.exe",
+                "C:/Users/hdabl/OneDrive/Documents/GitHub/Project_Alpha/TheDescent.exe",
                 "-lbgi",
                 "-lgdi32",
                 "-lcomdlg32",
                 "-luuid",
                 "-loleaut32",
                 "-lole32"
+
             ],
             "group": {
                 "kind": "build",

@@ -5,7 +5,7 @@
 #include "Character.h"
 #include "Enemy.h"
 
-const int MAX_ENTITY = 10;
+const int MAX_ENTITY = 5;
 
 class gameState {
 private:
@@ -14,8 +14,15 @@ private:
     const int viewportHeight = 10; // Height of the viewport in cells
     char map[10][20]; // The map
     MainCharacter player; // The player
+
     Enemy enemy[MAX_ENTITY]; // The enemies
+    //Position initialEnemyPositions[MAX_ENTITY] { {100, 200}, {150, 250}, {200, 300},}; // Add new position
+    
     void* playerSprite;
+
+    //NEW BOSS
+    Enemy Boss;
+    Position initialBossPosition = {15, 3};
 
 public:
     gameState();
@@ -26,6 +33,10 @@ public:
     void gameLoop();
     void battleScreen(Enemy& enemy, MainCharacter& player);
     void loadSprites();
+
+    //new
+   // void initializeEnemies();
+    void initializeBoss();
 };
 
 #endif // GAMESTATE_H

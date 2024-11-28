@@ -21,10 +21,15 @@ gameState::gameState() : player(1, 1) { // Initialize player at position (1, 1)
 
     // Initialize a fixed number of enemies
     enemy[0] = Enemy(10, 3);
+
     // Additional enemies can be added similarly
     for (int i = 1; i < MAX_ENTITY; ++i) {
         enemy[i] = Enemy(0, 0);  // Initialize remaining enemies off-map
     }
+
+    //new
+    //initializeEnemies();
+    initializeBoss();  // Initialize the boss
 
     loadSprites();
 }
@@ -38,6 +43,8 @@ void gameState::loadSprites() {
     cleardevice();
 }
 
+
+//Draw MAP
 void gameState::drawMap() {
     cleardevice();
     int cellSize = 16;
@@ -67,6 +74,17 @@ void gameState::drawMap() {
     // Draw player
     Position mcPos = player.getMCPosition();
     putimage((mcPos.x - viewportX) * cellSize, (mcPos.y - viewportY) * cellSize, playerSprite, COPY_PUT);
+
+
+    //Draw Boss
+    Position bossPos = Boss.getPosition();
+    if (bossPos.y >= viewportY && bossPos.y < viewportY + viewportHeight &&
+        bossPos.x >= viewportX && bossPos.x < viewportX + viewportWidth) {
+        char symbol[2] = { 'B', '\0' };
+        outtextxy((bossPos.x - viewportX) * cellSize, (bossPos.y - viewportY) * cellSize, symbol);
+    }
+
+
 }
 
 void gameState::displayHUD() {
@@ -121,7 +139,10 @@ void gameState::readInput(char input) {
         // Set the player's new position
         map[mcPos.y][mcPos.x] = 'P';
     }
-
+    
+    
+    
+    
     // Update enemies' positions after player moves
     for (int i = 0; i < MAX_ENTITY; i++) {
         if (enemy[i].isAlive()) {
@@ -140,6 +161,22 @@ void gameState::readInput(char input) {
 
     // Update the viewport
     updateViewport();
+}
+
+/*
+//Remove Enemy Repeat (NEW)
+void gameState::initializeEnemies() {
+    for (int i = 0; i < MAX_ENTITY; i++) {
+        if (enemy[i].isAlive()) {
+        // Assuming enemy[i] is an object and not a pointer
+          enemy[i].setPosition(initialEnemyPositions[i].x, initialEnemyPositions[i].y);  // Set initial positions
+        }
+    }
+}
+*/
+void gameState::initializeBoss() {
+    Boss.setBossPosition(initialBossPosition.x, initialBossPosition.y); //Set initial boss position
+    map[initialBossPosition.y][initialBossPosition.x] = 'B'; //Represent the boss in the map
 }
 
 void gameState::updateViewport() {
