@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/Users/hdabl/OneDrive/Documents/GitHub/Project_Alpha"
+                "C:/Users/nabil/source/repos/Project_Alpha"
             ],
             "defines": [
                 "_DEBUG",
