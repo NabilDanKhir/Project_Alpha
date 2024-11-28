@@ -36,10 +36,16 @@ gameState::gameState() : player(1, 1) { // Initialize player at position (1, 1)
 
 void gameState::loadSprites() {
     
-    readimagefile("player.bmp", 0, 0, 16, 16);
+    readimagefile("asset/player.bmp", 0, 0, 16, 16);
     int size = imagesize(0, 0, 16, 16);
     playerSprite = malloc(size);
     getimage(0, 0, 16, 16, playerSprite);
+    cleardevice();
+
+    readimagefile("asset/enemy.bmp", 0, 0, 16, 16);
+    size = imagesize(0, 0, 16, 16);
+    mobSprite = malloc(size);
+    getimage(0, 0, 16, 16, mobSprite);
     cleardevice();
 }
 
@@ -65,8 +71,7 @@ void gameState::drawMap() {
             Position enemyPos = enemy[i].getPosition();
             if (enemyPos.y >= viewportY && enemyPos.y < viewportY + viewportHeight &&
                 enemyPos.x >= viewportX && enemyPos.x < viewportX + viewportWidth) {
-                char symbol[2] = { 'E', '\0' };
-                outtextxy((enemyPos.x - viewportX) * cellSize, (enemyPos.y - viewportY) * cellSize, symbol);
+                putimage((enemyPos.x - viewportX) * cellSize, (enemyPos.y - viewportY) * cellSize, mobSprite, COPY_PUT);
             }
         }
     }

@@ -4,7 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/Users/nabil/source/repos/Project_Alpha"
+                "C:/Users/nabil/source/repos/Project_Alpha",
+                "C:/Users/nabil/source/repos/Project_Alpha/asset"
             ],
             "defines": [
                 "_DEBUG",

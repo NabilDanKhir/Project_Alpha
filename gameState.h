@@ -19,6 +19,7 @@ private:
     //Position initialEnemyPositions[MAX_ENTITY] { {100, 200}, {150, 250}, {200, 300},}; // Add new position
     
     void* playerSprite;
+    void* mobSprite;
 
     //NEW BOSS
     Enemy Boss;
