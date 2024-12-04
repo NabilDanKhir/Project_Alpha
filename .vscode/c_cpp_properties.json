@@ -4,8 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "D:/Github/Project_Alpha",
-                "D:/Github/Project_Alpha/asset"
+                "${workspaceFolder}/Project_Alpha",
+                "${workspaceFolder}/Project_Alpha/asset"
             ],
             "defines": [
                 "_DEBUG",
