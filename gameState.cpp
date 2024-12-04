@@ -132,6 +132,14 @@ void gameState::readInput(char input) {
             }
         }
 
+    //Battle With BOSS
+    Position bossPos = Boss.getPosition();
+        if (bossPos.x == newX && bossPos.y == newY) {
+            // Transition to battle screen
+            battleScreenBoss(Boss, player);
+            return;
+        }
+
         // Clear the player's old position
         map[mcPos.y][mcPos.x] = '.';
 
@@ -247,3 +255,54 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
     drawMap();
     displayHUD();
 }
+
+
+void gameState::battleScreenBoss(Enemy& Boss, MainCharacter& player) {
+    cleardevice();
+    outtextxy(100, 100, (char*)"Battle Start!");
+
+    // Display battle options
+    outtextxy(100, 150, (char*)"1. Attack");
+    outtextxy(100, 170, (char*)"2. Defend");
+    outtextxy(100, 190, (char*)"3. Item");
+    outtextxy(100, 210, (char*)"4. Run");
+
+    // Placeholder for user input handling
+    char choice = getch(); // Wait for user input
+
+    switch (choice) {
+    case '1':
+        // Attack logic (to be implroved)
+        outtextxy(100, 250, (char*)"You chose to Attack!");
+        Boss.takeDamage(player.attack());
+
+        // Enemy attacks player if still alive
+        if (Boss.isAlive()) {
+            player.takeDamage(Boss.attack());
+        }
+        break;
+    case '2':
+        // Defend logic (to be implemented)
+        outtextxy(100, 250, (char*)"You chose to Defend!");
+        break;
+    case '3':
+        // Item logic (to be implemented)
+        outtextxy(100, 250, (char*)"You chose to use an Item!");
+        break;
+    case '4':
+        // Run logic (to be implemented)
+        outtextxy(100, 250, (char*)"You chose to Run!");
+        break;
+    default:
+        outtextxy(100, 250, (char*)"Invalid choice!");
+        break;
+    }
+
+    getch(); // Wait for user input to continue
+
+    // Return to the main game screen
+    cleardevice();
+    drawMap();
+    displayHUD();
+}
+

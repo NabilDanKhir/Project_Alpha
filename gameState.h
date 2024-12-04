@@ -33,6 +33,7 @@ public:
     void displayHUD();
     void gameLoop();
     void battleScreen(Enemy& enemy, MainCharacter& player);
+    void battleScreenBoss(Enemy& Boss, MainCharacter& player);
     void loadSprites();
 
     //new

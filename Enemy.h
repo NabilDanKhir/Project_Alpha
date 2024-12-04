@@ -31,6 +31,7 @@ public:
 		positionX = x;
         positionY = y;
 	}
+	
 
 };
 #endif // !ENEMY_H
