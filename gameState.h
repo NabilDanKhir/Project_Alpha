@@ -23,7 +23,7 @@ private:
 
     //NEW BOSS
     Enemy Boss;
-    Position initialBossPosition = {15, 3};
+    Position initialBossPosition = {5, 5};
 
 public:
     gameState();
@@ -35,9 +35,7 @@ public:
     void battleScreen(Enemy& enemy, MainCharacter& player);
     void battleScreenBoss(Enemy& Boss, MainCharacter& player);
     void loadSprites();
-
-    //new
-   // void initializeEnemies();
+    
     void initializeBoss();
 };
 
