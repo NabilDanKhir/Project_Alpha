@@ -109,3 +109,23 @@ int MainCharacter::attack() const {
 
 	  return totalDamage;
 }
+
+bool attemptRun(const MainCharacter& player) {
+    int agility = player.getAgility();
+    int successChance = 0;
+
+    // Determine success chance based on agility
+    if (agility < 2) {
+        successChance = 30; // 30% chance
+    } else if (agility < 4) {
+        successChance = 60; // 60% chance
+    } else if (agility <= 6) {
+        successChance = 90; // 90% chance
+    }
+
+    // Generate a random number between 0 and 99
+    int randomValue = std::rand() % 100;
+
+    // Return true if random value is less than success chance
+    return randomValue < successChance;
+}

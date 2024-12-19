@@ -265,9 +265,16 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         // Item logic (to be implemented)
         outtextxy(100, 300, (char*)"You chose to use an Item!");
         break;
-    case '4':
-        // Run logic (to be implemented)
-        outtextxy(100, 300, (char*)"You chose to Run!");
+    case '4': // Run
+        if (attemptRun()) {
+        outtextxy(100, 300, (char*)"You successfully ran away!");
+        // Return to main game loop
+        return;
+        } else {
+        outtextxy(100, 300, (char*)"You failed to escape!");
+        // Enemy attacks player
+        player.takeDamage(enemy.attack());
+        }
         break;
     default:
         outtextxy(100, 300, (char*)"Invalid choice!");
@@ -332,29 +339,20 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
     displayHUD();
 }
 
-void gameState::runFromEnemy(MainCharacter& player, Enemy& enemy) {
-    int agility = player.getAgility();
-    int successChance = 0;
+bool gameState::attemptRun() {
+    int playerAgility = player.getAgility(); // Get the player's agility
+    int escapeChance = 0;
 
-    if (agility < 2) {
-        successChance = 10;  // 10% chance
-    } else if (agility < 4) {
-        successChance = 50;  // 50% chance
+    if (playerAgility < 2) {
+        escapeChance = 20; // Low chance to escape
+    } else if (playerAgility < 4) {
+        escapeChance = 50; // Medium chance to escape
+    } else if (playerAgility <= 6) {
+        escapeChance = 80; // High chance to escape
     } else {
-        successChance = 80;  // 80% chance
+        escapeChance = 100; // Guaranteed escape
     }
 
-    // Generate a random number to determine if the run is successful
-    int randomValue = std::rand() % 100;
-
-    if (randomValue < successChance) {
-        outtextxy(100, 270, (char*)"You successfully ran away!");
-        // Move the player away from the enemy
-        player.move(0, 0); // Move player to a safe distance (or out of combat area)
-        return;
-    } else {
-        outtextxy(100, 270, (char*)"You failed to run away!");
-        // If the player fails to run, the enemy will attack
-        player.takeDamage(enemy.attack());
-    }
+    int roll = std::rand() % 100; // Roll a random number between 0 and 99
+    return roll < escapeChance;
 }
