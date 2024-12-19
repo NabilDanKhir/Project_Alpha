@@ -211,18 +211,26 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
     // Display character and enemy health
     string playerHealthText = "Player Health: " + to_string(player.getHealth());
     outtextxy(80, 250, (char*)playerHealthText.c_str());
+    string doomMeterText = "Doom Meter: " + to_string(player.getDoom());
+    outtextxy(80, 270, (char*)doomMeterText.c_str());
     string enemyHealthText = "Enemy Health: " + to_string(enemy.getHealth());
-    outtextxy(500, 250, (char*)enemyHealthText.c_str());
+    outtextxy(450, 250, (char*)enemyHealthText.c_str());
 
     // Draw Battle Scene / Player & Enemy
     int battleBoxLeft = 80, battleBoxTop = 10, battleBoxRight = 650, battleBoxBottom = 235;
     rectangle(battleBoxLeft, battleBoxTop, battleBoxRight, battleBoxBottom); // Outer box for health info
 
-    //Player Asset
-    readimagefile("asset/player.bmp", 0, 0, 16, 16);  // You can adjust the size of the image to match your layout
-    int size = imagesize(0, 0, 64, 64);
+    //Player Assets
+    readimagefile("asset/player.bmp", 100, 60, 180, 190);  // You can adjust the size of the image to match your layout
+    int size = imagesize(100, 60, 180, 190);
     void* playerSprite = malloc(size);
-    getimage(0, 0, 64, 64, playerSprite);
+    getimage(100, 60, 180, 190, playerSprite);
+
+    //Enemy Assets
+    readimagefile("asset/enemy.bmp", 400, 50, 180, 190);
+    size = imagesize(400, 50, 180, 190);
+    void* mobSprite = malloc(size);
+    getimage(400, 50, 180, 190, mobSprite);
 
     // Draw the table box
     int tableLeft = 80, tableTop = 400, tableRight = 250, tableBottom = tableTop + (4 * 30);
