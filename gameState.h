@@ -36,7 +36,7 @@ public:
     void battleScreen(Enemy& enemy, MainCharacter& player);
     void battleScreenBoss(Boss& boss, MainCharacter& player);
     void loadSprites();
-    
+    void runFromEnemy(MainCharacter& player, Enemy& enemy);
     void initializeBoss();
 };
 

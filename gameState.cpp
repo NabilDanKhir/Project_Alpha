@@ -325,3 +325,29 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
     displayHUD();
 }
 
+void gameState::runFromEnemy(MainCharacter& player, Enemy& enemy) {
+    int agility = player.getAgility();
+    int successChance = 0;
+
+    if (agility < 2) {
+        successChance = 10;  // 10% chance
+    } else if (agility < 4) {
+        successChance = 50;  // 50% chance
+    } else {
+        successChance = 80;  // 80% chance
+    }
+
+    // Generate a random number to determine if the run is successful
+    int randomValue = std::rand() % 100;
+
+    if (randomValue < successChance) {
+        outtextxy(100, 270, (char*)"You successfully ran away!");
+        // Move the player away from the enemy
+        player.move(0, 0); // Move player to a safe distance (or out of combat area)
+        return;
+    } else {
+        outtextxy(100, 270, (char*)"You failed to run away!");
+        // If the player fails to run, the enemy will attack
+        player.takeDamage(enemy.attack());
+    }
+}
