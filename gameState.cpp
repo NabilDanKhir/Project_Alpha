@@ -273,15 +273,17 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         break;
     case '4': // Run
         if (attemptRun()) {
-        outtextxy(100, 300, (char*)"You successfully ran away!");
-        // Return to main game loop
-        return;
-        } else {
-        outtextxy(100, 300, (char*)"You failed to escape!");
+        enemy.takeDamage(999); // Instantly defeat the enemy
+        return; // Return to main game loop
+        } 
+        else {
         // Enemy attacks player
-        player.takeDamage(enemy.attack());
+        if(enemy.isAlive()) {
+            player.takeDamage(enemy.attack());
         }
         break;
+        }
+
     default:
         outtextxy(100, 300, (char*)"Invalid choice!");
         break;
@@ -341,7 +343,7 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         switch (choice) {
         case '1':
             // Attack logic
-            outtextxy(100, 250, (char*)"You chose to Attack!");
+            outtextxy(100, 300, (char*)"You chose to Attack!");
             boss.takeDamage(player.attack());
 
             // Boss attacks player if still alive
@@ -351,18 +353,18 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
             break;
         case '2':
             // Defend logic (to be implemented)
-            outtextxy(100, 250, (char*)"You chose to Defend!");
+            outtextxy(100, 300, (char*)"You chose to Defend!");
             break;
         case '3':
             // Item logic (to be implemented)
-            outtextxy(100, 250, (char*)"You chose to use an Item!");
+            outtextxy(100, 300, (char*)"You chose to use an Item!");
             break;
         case '4':
             // Run logic (to be implemented)
-            outtextxy(100, 250, (char*)"You chose to Run!");
-            return; // Exit the battle
+            outtextxy(100, 300, (char*)"You can't RUN Coward!");
+            break;
         default:
-            outtextxy(100, 250, (char*)"Invalid choice!");
+            outtextxy(100, 300, (char*)"Invalid choice!");
             break;
         }
 
@@ -400,5 +402,15 @@ bool gameState::attemptRun() {
     }
 
     int roll = std::rand() % 100; // Roll a random number between 0 and 99
+
+    if (roll < escapeChance) {
+        outtextxy(100, 300, (char*)"You successfully ran away!");
+        getch();
+    } else {
+        outtextxy(100, 300, (char*)"You failed to escape!");
+        getch();
+    }
+    
     return roll < escapeChance;
+    
 }
