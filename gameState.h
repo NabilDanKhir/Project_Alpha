@@ -36,8 +36,8 @@ public:
     void battleScreen(Enemy& enemy, MainCharacter& player);
     void battleScreenBoss(Boss& boss, MainCharacter& player);
     void loadSprites();
-    
     void initializeBoss();
+    bool attemptRun();
 };
 
 #endif // GAMESTATE_H

@@ -273,9 +273,16 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         // Item logic (to be implemented)
         outtextxy(100, 300, (char*)"You chose to use an Item!");
         break;
-    case '4':
-        // Run logic (to be implemented)
-        outtextxy(100, 300, (char*)"You chose to Run!");
+    case '4': // Run
+        if (attemptRun()) {
+        outtextxy(100, 300, (char*)"You successfully ran away!");
+        // Return to main game loop
+        return;
+        } else {
+        outtextxy(100, 300, (char*)"You failed to escape!");
+        // Enemy attacks player
+        player.takeDamage(enemy.attack());
+        }
         break;
     default:
         outtextxy(100, 300, (char*)"Invalid choice!");
@@ -340,3 +347,20 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
     displayHUD();
 }
 
+bool gameState::attemptRun() {
+    int playerAgility = player.getAgility(); // Get the player's agility
+    int escapeChance = 0;
+
+    if (playerAgility < 2) {
+        escapeChance = 20; // Low chance to escape
+    } else if (playerAgility < 4) {
+        escapeChance = 50; // Medium chance to escape
+    } else if (playerAgility <= 6) {
+        escapeChance = 80; // High chance to escape
+    } else {
+        escapeChance = 100; // Guaranteed escape
+    }
+
+    int roll = std::rand() % 100; // Roll a random number between 0 and 99
+    return roll < escapeChance;
+}
