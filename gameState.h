@@ -20,6 +20,7 @@ private:
     
     void* playerSprite;
     void* mobSprite;
+    void* bossSprite1;
 
     //NEW BOSS
     Boss boss;

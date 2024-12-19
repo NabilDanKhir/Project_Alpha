@@ -31,7 +31,6 @@ player.allocateInitialPoints(); // Prompt the player to allocate their initial s
 
    
     initializeBoss();  // Initialize the boss
-
     loadSprites();
 }
 
@@ -47,6 +46,12 @@ void gameState::loadSprites() {
     size = imagesize(0, 0, 16, 16);
     mobSprite = malloc(size);
     getimage(0, 0, 16, 16, mobSprite);
+    cleardevice();
+
+    readimagefile("asset/enemy.bmp", 0, 0, 16, 16);
+    size = imagesize(0, 0, 16, 16);
+    bossSprite1 = malloc(size);
+    getimage(0, 0, 16, 16, bossSprite1);
     cleardevice();
 }
 
@@ -89,11 +94,10 @@ void gameState::drawMap() {
 
     //Draw Boss
     Position bossPos = boss.getBossPosition();
-    if (bossPos.y >= viewportY && bossPos.y < viewportY + viewportHeight &&
-        bossPos.x >= viewportX && bossPos.x < viewportX + viewportWidth) {
-        char symbol = { 'B'};
-        outtextxy((bossPos.x - viewportX) * cellSize, (bossPos.y - viewportY) * cellSize, symbol);
-    }
+    map[bossPos.y][bossPos.x] = 'B';
+    int bossScaledX = (bossPos.x - viewportX) * cellSize;
+    int bossScaledY = (bossPos.y - viewportY) * cellSize;
+    putimage(bossScaledX, bossScaledY, bossSprite1, COPY_PUT);
 
 
 }
