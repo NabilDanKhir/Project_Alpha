@@ -1,6 +1,7 @@
 #include "Enemy.h"
 
 Enemy::Enemy(int x, int y) : position({x, y}), health(5) {}
+Boss::Boss(int bossX, int bossY) : pos({bossX, bossY}), health(10) {}
 
 void Enemy::moveTowards(Position mcPosition, Enemy* enemies, int numEnemies) {
     Position newPosition = position;
@@ -48,4 +49,8 @@ void Enemy::takeDamage(int damage) {
 int Enemy::attack() const {
     // Implement attack logic
     return 10; // Example attack value
+}
+
+Position Boss::getBossPosition() const {
+    return pos;
 }

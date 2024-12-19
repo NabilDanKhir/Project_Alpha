@@ -2,6 +2,8 @@
 #include <graphics.h>  
 
 gameState::gameState() : player(1, 1) { // Initialize player at position (1, 1)
+player.allocateInitialPoints(); // Prompt the player to allocate their initial stats
+
     const char tempMap[10][20] = {
         "###################",
         "#.................#",
@@ -27,8 +29,7 @@ gameState::gameState() : player(1, 1) { // Initialize player at position (1, 1)
         enemy[i] = Enemy(0, 0);  // Initialize remaining enemies off-map
     }
 
-    //new
-    //initializeEnemies();
+   
     initializeBoss();  // Initialize the boss
 
     loadSprites();
@@ -87,7 +88,7 @@ void gameState::drawMap() {
     putimage(scaledX, scaledY, playerSprite, COPY_PUT);
 
     //Draw Boss
-    Position bossPos = Boss.getPosition();
+    Position bossPos = boss.getBossPosition();
     if (bossPos.y >= viewportY && bossPos.y < viewportY + viewportHeight &&
         bossPos.x >= viewportX && bossPos.x < viewportX + viewportWidth) {
         char symbol = { 'B'};
@@ -138,12 +139,14 @@ void gameState::readInput(char input) {
         }
 
     //Battle With BOSS
-    Position bossPos = Boss.getPosition();
-        if (bossPos.x == newX && bossPos.y == newY) {
+    Position bossPos = boss.getBossPosition();
+    if (bossPos.x == newX && bossPos.y == newY) {
+        if (boss.isAlive() && bossPos.x == newX && bossPos.y == newY) {
             // Transition to battle screen
-            battleScreenBoss(Boss, player);
+            battleScreen(boss, player);
             return;
         }
+    }
 
         // Clear the player's old position
         map[mcPos.y][mcPos.x] = '.';
@@ -180,8 +183,7 @@ void gameState::readInput(char input) {
 }
 
 void gameState::initializeBoss() {
-    Boss.setBossPosition(initialBossPosition.x, initialBossPosition.y); //Set initial boss position
-    map[initialBossPosition.y][initialBossPosition.x] = 'B'; //Represent the boss in the map
+    boss.getBossPosition(); //Set initial boss position
 }
 
 void gameState::updateViewport() {
@@ -249,7 +251,7 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
 }
 
 
-void gameState::battleScreenBoss(Enemy& Boss, MainCharacter& player) {
+void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
     cleardevice();
     outtextxy(100, 100, (char*)"Battle Start!");
 
@@ -266,11 +268,11 @@ void gameState::battleScreenBoss(Enemy& Boss, MainCharacter& player) {
     case '1':
         // Attack logic (to be implroved)
         outtextxy(100, 250, (char*)"You chose to Attack!");
-        Boss.takeDamage(player.attack());
+        boss.takeDamage(player.attack());
 
         // Enemy attacks player if still alive
-        if (Boss.isAlive()) {
-            player.takeDamage(Boss.attack());
+        if (boss.isAlive()) {
+            player.takeDamage(boss.attack());
         }
         break;
     case '2':

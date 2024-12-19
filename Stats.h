@@ -27,25 +27,32 @@ public:
     void displayStats() const;
 
     bool allocatePointToStat(const std::string& statName) {
-    if (availablePoints <= 0) {
-        return false; // No points available to allocate
-    }
+    
+        if (availablePoints <= 0) {
+            return false; // No points available to allocate
+        }
+    
+        else {
+            if (statName == "S" || statName == "s" || statName == "strength" || statName == "Strength") {
+            ++strength;
+            }   
+    
+            else if (statName == "I" || statName == "i" || statName == "I" || statName == "i" || statName == "intelligence" || statName == "Intelligence" || statName == "Intelligence") {
+            ++intelligence;
+            } 
+            else if (statName == "A" || statName == "a" || statName == "A" || statName == "a" || statName == "agility" || statName == "Agility" || statName == "Agility") {
+            ++agility;
+            }    
+            else if (statName == "L" || statName == "l" || statName == "L" || statName == "l" || statName == "luck" || statName == "Luck" || statName == "Luck") {
+            ++luck;
+            } 
+            else {
+                return false; // Invalid stat name
+            }
 
-    if (statName == "strength") {
-        ++strength;
-    } else if (statName == "intelligence") {
-        ++intelligence;
-    } else if (statName == "agility") {
-        ++agility;
-    } else if (statName == "luck") {
-        ++luck;
-    } else {
-        return false; // Invalid stat name
-    }
-
-    --availablePoints; // Deduct the allocated point
-    return true;
-}
+            --availablePoints; // Deduct the allocated point
+            return true;
+        }   
+   }
 };
-
 #endif // STATS_H

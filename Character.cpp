@@ -19,11 +19,13 @@ MainCharacter::MainCharacter(int x, int y)
 
 void MainCharacter::allocateInitialPoints() 
 {
-    std::cout << "Hello Ethan, what do you know about yourself " << stats.getAvailablePoints() << endl;
+    std::cout << "Hello Ethan, what do you know about yourself " << endl;
 			  
     while (stats.getAvailablePoints() > 0) {
         displayStats();
-		std::cout << "Enter the stat to increase (strength, intelligence, agility, luck): ";
+		std::cout << "Points remaining: " << stats.getAvailablePoints() << "\n";
+		std::cout << "\n";
+		std::cout << "Enter the stat to increase (strength(S), intelligence(I), agility(A), luck(L)): ";
         std::string statName;
         std::cin >> statName;
 	if (!stats.allocatePointToStat(statName)) {
@@ -32,7 +34,9 @@ void MainCharacter::allocateInitialPoints()
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
-	std::cout << "Final stats:\n";
+	system("cls");
+	std::cout << "Here is your final stat Ethan:\n";
+	std::cout << "\n";
     displayStats();
 }
 
@@ -41,7 +45,6 @@ void MainCharacter::displayStats() const {
     std::cout << "Intelligence: " << stats.getIntelligence() << "\n";
     std::cout << "Agility: " << stats.getAgility() << "\n";
     std::cout << "Luck: " << stats.getLuck() << "\n";
-    std::cout << "Points remaining: " << stats.getAvailablePoints() << "\n";
 }
 
 void MainCharacter::move(int mcx, int mcy) {
