@@ -105,7 +105,7 @@ void gameState::drawMap() {
 void gameState::displayHUD() {
     char hudText[50];
     sprintf(hudText, "Health: %d / 10 Doom: %d / 50", player.getHealth(), player.getDoom());
-    outtextxy(10, 180, hudText);
+    outtextxy(10, 600, hudText);
 }
 
 void gameState::gameLoop() {
@@ -207,15 +207,25 @@ void gameState::updateViewport() {
 
 void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
     cleardevice();
-    
-     // Display character and enemy health
+   
+    // Display character and enemy health
     string playerHealthText = "Player Health: " + to_string(player.getHealth());
-    outtextxy(30, 80, (char*)playerHealthText.c_str());
+    outtextxy(80, 250, (char*)playerHealthText.c_str());
     string enemyHealthText = "Enemy Health: " + to_string(enemy.getHealth());
-    outtextxy(300, 80, (char*)enemyHealthText.c_str());
+    outtextxy(500, 250, (char*)enemyHealthText.c_str());
+
+    // Draw Battle Scene / Player & Enemy
+    int battleBoxLeft = 80, battleBoxTop = 10, battleBoxRight = 650, battleBoxBottom = 235;
+    rectangle(battleBoxLeft, battleBoxTop, battleBoxRight, battleBoxBottom); // Outer box for health info
+
+    //Player Asset
+    readimagefile("asset/player.bmp", 0, 0, 16, 16);  // You can adjust the size of the image to match your layout
+    int size = imagesize(0, 0, 64, 64);
+    void* playerSprite = malloc(size);
+    getimage(0, 0, 64, 64, playerSprite);
 
     // Draw the table box
-    int tableLeft = 80, tableTop = 140, tableRight = 200, tableBottom = 260;
+    int tableLeft = 80, tableTop = 400, tableRight = 250, tableBottom = tableTop + (4 * 30);
     rectangle(tableLeft, tableTop, tableRight, tableBottom); // Outer table border
 
     // Draw horizontal lines to create rows
@@ -224,25 +234,22 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         line(tableLeft, y, tableRight, y);
     }
 
-    // Draw vertical divider (optional, for multiple columns)
-    // Uncomment the next line if you want a column structure
-    // line((tableLeft + tableRight) / 2, tableTop, (tableLeft + tableRight) / 2, tableBottom);
-
     // Add text inside the table rows
-    outtextxy(100, tableTop + 5, (char*)"Battle Options"); // Table title
-    outtextxy(100, tableTop + rowHeight + 5, (char*)"1. Attack");
-    outtextxy(100, tableTop + 2 * rowHeight + 5, (char*)"2. Defend");
-    outtextxy(100, tableTop + 3 * rowHeight + 5, (char*)"3. Item");
-    outtextxy(100, tableTop + 4 * rowHeight + 5, (char*)"4. Run");
-
-
+    outtextxy((tableLeft + tableRight) / 2 - 50, tableTop - 30, (char*)"Battle Options");
+    
+    int textXOffset = tableLeft + 10; // Indent text slightly
+    outtextxy(textXOffset, tableTop + 5, (char*)"1. Attack");
+    outtextxy(textXOffset, tableTop + rowHeight + 5, (char*)"2. Defend");
+    outtextxy(textXOffset, tableTop + 2 * rowHeight + 5, (char*)"3. Item");
+    outtextxy(textXOffset, tableTop + 3 * rowHeight + 5, (char*)"4. Run");
+    
     // Placeholder for user input handling
     char choice = getch(); // Wait for user input
 
     switch (choice) {
     case '1':
         // Attack logic (to be implroved)
-        outtextxy(100, 250, (char*)"You chose to Attack!");
+        outtextxy(100, 300, (char*)"You chose to Attack!");
         enemy.takeDamage(player.attack());
 
         // Enemy attacks player if still alive
@@ -252,18 +259,18 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         break;
     case '2':
         // Defend logic (to be implemented)
-        outtextxy(100, 250, (char*)"You chose to Defend!");
+        outtextxy(100, 300, (char*)"You chose to Defend!");
         break;
     case '3':
         // Item logic (to be implemented)
-        outtextxy(100, 250, (char*)"You chose to use an Item!");
+        outtextxy(100, 300, (char*)"You chose to use an Item!");
         break;
     case '4':
         // Run logic (to be implemented)
-        outtextxy(100, 250, (char*)"You chose to Run!");
+        outtextxy(100, 300, (char*)"You chose to Run!");
         break;
     default:
-        outtextxy(100, 250, (char*)"Invalid choice!");
+        outtextxy(100, 300, (char*)"Invalid choice!");
         break;
     }
 
