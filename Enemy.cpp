@@ -1,7 +1,7 @@
 #include "Enemy.h"
 
 Enemy::Enemy(int x, int y) : position({x, y}), health(5) {}
-Boss::Boss(int bossX, int bossY) : pos({bossX, bossY}), health(10) {}
+Boss::Boss(int bossX, int bossY) : pos({bossX, bossY}), health(20) {}
 
 void Enemy::moveTowards(Position mcPosition, Enemy* enemies, int numEnemies) {
     Position newPosition = position;
@@ -53,4 +53,18 @@ int Enemy::attack() const {
 
 Position Boss::getBossPosition() const {
     return pos;
+}
+
+bool Boss::isAlive() const {
+    return health > 0;
+}
+
+int Boss::attack() const {
+    // Implement attack logic
+    return 1; // Example attack value
+}
+
+void Boss::takeDamage(int damage) {
+    health -= damage;
+    if (health < 0) health = 0;
 }

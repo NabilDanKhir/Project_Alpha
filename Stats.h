@@ -37,13 +37,13 @@ public:
             ++strength;
             }   
     
-            else if (statName == "I" || statName == "i" || statName == "I" || statName == "i" || statName == "intelligence" || statName == "Intelligence" || statName == "Intelligence") {
+            else if (statName == "I" || statName == "i" || statName == "intelligence" || statName == "Intelligence") {
             ++intelligence;
             } 
-            else if (statName == "A" || statName == "a" || statName == "A" || statName == "a" || statName == "agility" || statName == "Agility" || statName == "Agility") {
+            else if (statName == "A" || statName == "a" || statName == "agility" || statName == "Agility") {
             ++agility;
             }    
-            else if (statName == "L" || statName == "l" || statName == "L" || statName == "l" || statName == "luck" || statName == "Luck" || statName == "Luck") {
+            else if (statName == "L" || statName == "l" || statName == "luck" || statName == "Luck") {
             ++luck;
             } 
             else {

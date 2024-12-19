@@ -93,13 +93,14 @@ void gameState::drawMap() {
     putimage(scaledX, scaledY, playerSprite, COPY_PUT);
 
     //Draw Boss
-    Position bossPos = boss.getBossPosition();
-    map[bossPos.y][bossPos.x] = 'B';
-    int bossScaledX = (bossPos.x - viewportX) * cellSize;
-    int bossScaledY = (bossPos.y - viewportY) * cellSize;
-    putimage(bossScaledX, bossScaledY, bossSprite1, COPY_PUT);
-
-
+    if (boss.isAlive()) {
+        Position bossPos = boss.getBossPosition();
+        int bossScaledX = (bossPos.x - viewportX) * cellSize;
+        int bossScaledY = (bossPos.y - viewportY) * cellSize;
+        int scaledSize = cellSize;
+        putimage(bossScaledX, bossScaledY, bossSprite1, COPY_PUT);
+    }
+    
 }
 
 void gameState::displayHUD() {
@@ -142,16 +143,6 @@ void gameState::readInput(char input) {
             }
         }
 
-    //Battle With BOSS
-    Position bossPos = boss.getBossPosition();
-    if (bossPos.x == newX && bossPos.y == newY) {
-        if (boss.isAlive() && bossPos.x == newX && bossPos.y == newY) {
-            // Transition to battle screen
-            battleScreenBoss(boss, player);
-            return;
-        }
-    }
-
         // Clear the player's old position
         map[mcPos.y][mcPos.x] = '.';
 
@@ -164,7 +155,6 @@ void gameState::readInput(char input) {
         // Set the player's new position
         map[mcPos.y][mcPos.x] = 'P';
     }
-    
     
     // Update enemies' positions after player moves
     for (int i = 0; i < MAX_ENTITY; i++) {
@@ -180,6 +170,14 @@ void gameState::readInput(char input) {
                 return;
             }
         }
+    }
+
+    // Check for collision with the boss after player moves
+    Position bossPos = boss.getBossPosition();
+    if (boss.isAlive() && bossPos.x == mcPos.x && bossPos.y == mcPos.y) {
+        // Transition to battle screen
+        battleScreenBoss(boss, player);
+        return;
     }
 
     // Update the viewport
@@ -284,44 +282,84 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
 
 
 void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
-    cleardevice();
-    outtextxy(100, 100, (char*)"Battle Start!");
+    while (boss.isAlive() && player.isAlive()) {
+        cleardevice();
+        
+        // Display character and boss health
+        string playerHealthText = "Player Health: " + to_string(player.getHealth());
+        outtextxy(80, 250, (char*)playerHealthText.c_str());
+        string bossHealthText = "Boss Health: " + to_string(boss.getHealth());
+        outtextxy(500, 250, (char*)bossHealthText.c_str());
 
-    // Display battle options
-    outtextxy(100, 150, (char*)"1. Attack");
-    outtextxy(100, 170, (char*)"2. Defend");
-    outtextxy(100, 190, (char*)"3. Item");
-    outtextxy(100, 210, (char*)"4. Run");
+        // Draw Battle Scene / Player & Enemy
+        int battleBoxLeft = 80, battleBoxTop = 10, battleBoxRight = 650, battleBoxBottom = 235;
+        rectangle(battleBoxLeft, battleBoxTop, battleBoxRight, battleBoxBottom); // Outer box for health info
 
-    // Placeholder for user input handling
-    char choice = getch(); // Wait for user input
+        //Player Asset
+        readimagefile("asset/player.bmp", 0, 0, 16, 16);  // You can adjust the size of the image to match your layout
+        int size = imagesize(0, 0, 64, 64);
+        void* playerSprite = malloc(size);
+        getimage(0, 0, 64, 64, playerSprite);
 
-    switch (choice) {
-    case '1':
-        // Attack logic (to be implroved)
-        outtextxy(100, 250, (char*)"You chose to Attack!");
-        boss.takeDamage(player.attack());
+        // Draw the table box
+        int tableLeft = 80, tableTop = 400, tableRight = 250, tableBottom = tableTop + (4 * 30);
+        rectangle(tableLeft, tableTop, tableRight, tableBottom); // Outer table border
 
-        // Enemy attacks player if still alive
-        if (boss.isAlive()) {
-            player.takeDamage(boss.attack());
+        // Draw horizontal lines to create rows
+        int rowHeight = 30;
+        for (int y = tableTop + rowHeight; y < tableBottom; y += rowHeight) {
+            line(tableLeft, y, tableRight, y);
         }
-        break;
-    case '2':
-        // Defend logic (to be implemented)
-        outtextxy(100, 250, (char*)"You chose to Defend!");
-        break;
-    case '3':
-        // Item logic (to be implemented)
-        outtextxy(100, 250, (char*)"You chose to use an Item!");
-        break;
-    case '4':
-        // Run logic (to be implemented)
-        outtextxy(100, 250, (char*)"You chose to Run!");
-        break;
-    default:
-        outtextxy(100, 250, (char*)"Invalid choice!");
-        break;
+
+        // Add text inside the table rows
+        outtextxy((tableLeft + tableRight) / 2 - 50, tableTop - 30, (char*)"Battle Options");
+        
+        int textXOffset = tableLeft + 10; // Indent text slightly
+        outtextxy(textXOffset, tableTop + 5, (char*)"1. Attack");
+        outtextxy(textXOffset, tableTop + rowHeight + 5, (char*)"2. Defend");
+        outtextxy(textXOffset, tableTop + 2 * rowHeight + 5, (char*)"3. Item");
+        outtextxy(textXOffset, tableTop + 3 * rowHeight + 5, (char*)"4. Run");
+
+        // Placeholder for user input handling
+        char choice = getch(); // Wait for user input
+
+        switch (choice) {
+        case '1':
+            // Attack logic
+            outtextxy(100, 250, (char*)"You chose to Attack!");
+            boss.takeDamage(player.attack());
+
+            // Boss attacks player if still alive
+            if (boss.isAlive()) {
+                player.takeDamage(boss.attack());
+            }
+            break;
+        case '2':
+            // Defend logic (to be implemented)
+            outtextxy(100, 250, (char*)"You chose to Defend!");
+            break;
+        case '3':
+            // Item logic (to be implemented)
+            outtextxy(100, 250, (char*)"You chose to use an Item!");
+            break;
+        case '4':
+            // Run logic (to be implemented)
+            outtextxy(100, 250, (char*)"You chose to Run!");
+            return; // Exit the battle
+        default:
+            outtextxy(100, 250, (char*)"Invalid choice!");
+            break;
+        }
+
+        getch(); // Wait for user input to continue
+    }
+
+    cleardevice();
+    if (!boss.isAlive()) {
+        map[boss.getBossPosition().y][boss.getBossPosition().x] = '.'; // Remove boss from map
+        outtextxy(100, 300, (char*)"You defeated the Boss!");
+    } else if (!player.isAlive()) {
+        outtextxy(100, 300, (char*)"You were defeated by the Boss!");
     }
 
     getch(); // Wait for user input to continue
@@ -331,4 +369,3 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
     drawMap();
     displayHUD();
 }
-
