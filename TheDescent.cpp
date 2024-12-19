@@ -3,9 +3,11 @@
 #include "gameState.h"
 
 int main() {
-    int gd = DETECT, gm;
     
-    initgraph(&gd, &gm, (char*)"");
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+    initwindow(screenWidth, screenHeight, "The Descent");
 
     gameState game;
     game.gameLoop();
@@ -13,5 +15,4 @@ int main() {
     closegraph();
     return 0;
 
-    //test
 }

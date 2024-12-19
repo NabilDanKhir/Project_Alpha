@@ -31,7 +31,6 @@ player.allocateInitialPoints(); // Prompt the player to allocate their initial s
 
    
     initializeBoss();  // Initialize the boss
-
     loadSprites();
 }
 
@@ -48,13 +47,19 @@ void gameState::loadSprites() {
     mobSprite = malloc(size);
     getimage(0, 0, 16, 16, mobSprite);
     cleardevice();
+
+    readimagefile("asset/enemy.bmp", 0, 0, 16, 16);
+    size = imagesize(0, 0, 16, 16);
+    bossSprite1 = malloc(size);
+    getimage(0, 0, 16, 16, bossSprite1);
+    cleardevice();
 }
 
 
 //Draw MAP
 void gameState::drawMap() {
     cleardevice();
-    int cellSize = 16;
+    int cellSize = min(getmaxx() / viewportWidth, getmaxy() / viewportHeight);
     for (int y = 0; y < viewportHeight; y++) {
         for (int x = 0; x < viewportWidth; x++) {
             int mapX = viewportX + x;
@@ -72,23 +77,27 @@ void gameState::drawMap() {
             Position enemyPos = enemy[i].getPosition();
             if (enemyPos.y >= viewportY && enemyPos.y < viewportY + viewportHeight &&
                 enemyPos.x >= viewportX && enemyPos.x < viewportX + viewportWidth) {
-                putimage((enemyPos.x - viewportX) * cellSize, (enemyPos.y - viewportY) * cellSize, mobSprite, COPY_PUT);
+                int scaledX = (enemyPos.x - viewportX) * cellSize;
+                int scaledY = (enemyPos.y - viewportY) * cellSize;
+                int scaledSize = cellSize;
+                putimage(scaledX, scaledY, mobSprite, COPY_PUT);
             }
         }
     }
 
     // Draw player
     Position mcPos = player.getMCPosition();
-    putimage((mcPos.x - viewportX) * cellSize, (mcPos.y - viewportY) * cellSize, playerSprite, COPY_PUT);
-
+    int scaledX = (mcPos.x - viewportX) * cellSize;
+    int scaledY = (mcPos.y - viewportY) * cellSize;
+    int scaledSize = cellSize;
+    putimage(scaledX, scaledY, playerSprite, COPY_PUT);
 
     //Draw Boss
     Position bossPos = boss.getBossPosition();
-    if (bossPos.y >= viewportY && bossPos.y < viewportY + viewportHeight &&
-        bossPos.x >= viewportX && bossPos.x < viewportX + viewportWidth) {
-        char symbol[2] = { 'B', '\0' };
-        outtextxy((bossPos.x - viewportX) * cellSize, (bossPos.y - viewportY) * cellSize, symbol);
-    }
+    map[bossPos.y][bossPos.x] = 'B';
+    int bossScaledX = (bossPos.x - viewportX) * cellSize;
+    int bossScaledY = (bossPos.y - viewportY) * cellSize;
+    putimage(bossScaledX, bossScaledY, bossSprite1, COPY_PUT);
 
 
 }
