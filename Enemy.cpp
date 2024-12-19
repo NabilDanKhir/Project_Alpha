@@ -48,7 +48,7 @@ void Enemy::takeDamage(int damage) {
 
 int Enemy::attack() const {
     // Implement attack logic
-    return 10; // Example attack value
+    return 1; // Example attack value
 }
 
 Position Boss::getBossPosition() const {
