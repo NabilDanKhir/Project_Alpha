@@ -38,6 +38,8 @@ void MainCharacter::allocateInitialPoints()
 	std::cout << "Here is your final stat Ethan:\n";
 	std::cout << "\n";
     displayStats();
+
+	
 }
 
 void MainCharacter::displayStats() const {
@@ -48,9 +50,27 @@ void MainCharacter::displayStats() const {
 }
 
 void MainCharacter::move(int mcx, int mcy) {
-	position.x += mcx;
-	position.y += mcy;
+    // Get agility value and calculate the maximum movement range
+    int maxMove = stats.getAgility();
+    if (maxMove <= 0) {
+        maxMove = 1; // Ensure that the character moves at least 1 tile per turn
+    }
+
+    // Randomize the number of tiles moved within the agility range
+    int moveX = (std::rand() % maxMove) + 1; // Ensure that at least 1 tile is moved
+    int moveY = (std::rand() % maxMove) + 1; 
+
+    // Apply the movement
+    position.x += mcx * moveX;
+    position.y += mcy * moveY;
+
+    // Ensure the player doesn't move outside of the map (assuming map size is 20x10)
+    if (position.x < 0) position.x = 0;
+    if (position.x >= 20) position.x = 19; // map width is 20
+    if (position.y < 0) position.y = 0;
+    if (position.y >= 10) position.y = 9; // map height is 10
 }
+
 
 bool MainCharacter::doomed() {
 	return doomCounter >= 50;
