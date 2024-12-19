@@ -30,22 +30,22 @@ public:
     if (availablePoints <= 0) {
         return false; // No points available to allocate
     }
-
-    if (statName == "strength") {
+    
+    if (statName == "S" || statName == "s" || statName == "strength" || statName == "Strength") {
         ++strength;
-    } else if (statName == "intelligence") {
+    } else if (statName == "I" || statName == "i" || statName == "intelligence" || statName == "Intelligence") {
         ++intelligence;
-    } else if (statName == "agility") {
+    } else if (statName == "A" || statName == "a" || statName == "agility" || statName == "Agility") {
         ++agility;
-    } else if (statName == "luck") {
+    } else if (statName == "L" || statName == "l" || statName == "luck" || statName == "Luck") {
         ++luck;
     } else {
-        return false; // Invalid stat name
+        return false; // Invalid stat name
     }
 
     --availablePoints; // Deduct the allocated point
     return true;
-}
+    }
 };
 
 #endif // STATS_H

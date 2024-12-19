@@ -7,11 +7,6 @@ class Enemy {
 private:
 	Position position;
 	int health;
-	
-	//Boss
-	int positionX, positionY;
-
-
 public:
 	Enemy(){
 		position.x = 9;
@@ -26,12 +21,24 @@ public:
 	void takeDamage(int damage);
     int attack() const;
 
-	//BOSS (NEW)
-	void setBossPosition(int x, int y){
-		positionX = x;
-        positionY = y;
+
+};
+
+class Boss : public Enemy {
+	private:
+	Position pos;
+	int health;
+
+	public: 
+	Boss() {
+		pos.x = 5;
+		pos.y = 2;
 	}
-	
+
+	//BOSS (NEW)
+	Boss(int x, int y);
+	Position setBossPosition() const;
+	Position getBossPosition() const;
 
 };
 #endif // !ENEMY_H

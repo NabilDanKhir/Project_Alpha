@@ -27,8 +27,7 @@ gameState::gameState() : player(1, 1) { // Initialize player at position (1, 1)
         enemy[i] = Enemy(0, 0);  // Initialize remaining enemies off-map
     }
 
-    //new
-    //initializeEnemies();
+   
     initializeBoss();  // Initialize the boss
 
     loadSprites();
@@ -82,7 +81,7 @@ void gameState::drawMap() {
 
 
     //Draw Boss
-    Position bossPos = Boss.getPosition();
+    Position bossPos = boss.getBossPosition();
     if (bossPos.y >= viewportY && bossPos.y < viewportY + viewportHeight &&
         bossPos.x >= viewportX && bossPos.x < viewportX + viewportWidth) {
         char symbol[2] = { 'B', '\0' };
@@ -133,12 +132,14 @@ void gameState::readInput(char input) {
         }
 
     //Battle With BOSS
-    Position bossPos = Boss.getPosition();
-        if (bossPos.x == newX && bossPos.y == newY) {
+    Position bossPos = boss.getBossPosition();
+    if (bossPos.x == newX && bossPos.y == newY) {
+        if (boss.isAlive() && bossPos.x == newX && bossPos.y == newY) {
             // Transition to battle screen
-            battleScreenBoss(Boss, player);
+            battleScreen(boss, player);
             return;
         }
+    }
 
         // Clear the player's old position
         map[mcPos.y][mcPos.x] = '.';
@@ -152,8 +153,6 @@ void gameState::readInput(char input) {
         // Set the player's new position
         map[mcPos.y][mcPos.x] = 'P';
     }
-    
-    
     
     
     // Update enemies' positions after player moves
@@ -176,20 +175,8 @@ void gameState::readInput(char input) {
     updateViewport();
 }
 
-/*
-//Remove Enemy Repeat (NEW)
-void gameState::initializeEnemies() {
-    for (int i = 0; i < MAX_ENTITY; i++) {
-        if (enemy[i].isAlive()) {
-        // Assuming enemy[i] is an object and not a pointer
-          enemy[i].setPosition(initialEnemyPositions[i].x, initialEnemyPositions[i].y);  // Set initial positions
-        }
-    }
-}
-*/
 void gameState::initializeBoss() {
-    Boss.setBossPosition(initialBossPosition.x, initialBossPosition.y); //Set initial boss position
-    map[initialBossPosition.y][initialBossPosition.x] = 'B'; //Represent the boss in the map
+    boss.getBossPosition(); //Set initial boss position
 }
 
 void gameState::updateViewport() {
@@ -257,7 +244,7 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
 }
 
 
-void gameState::battleScreenBoss(Enemy& Boss, MainCharacter& player) {
+void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
     cleardevice();
     outtextxy(100, 100, (char*)"Battle Start!");
 
@@ -274,11 +261,11 @@ void gameState::battleScreenBoss(Enemy& Boss, MainCharacter& player) {
     case '1':
         // Attack logic (to be implroved)
         outtextxy(100, 250, (char*)"You chose to Attack!");
-        Boss.takeDamage(player.attack());
+        boss.takeDamage(player.attack());
 
         // Enemy attacks player if still alive
-        if (Boss.isAlive()) {
-            player.takeDamage(Boss.attack());
+        if (boss.isAlive()) {
+            player.takeDamage(boss.attack());
         }
         break;
     case '2':

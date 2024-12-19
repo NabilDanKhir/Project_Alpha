@@ -22,8 +22,8 @@ private:
     void* mobSprite;
 
     //NEW BOSS
-    Enemy Boss;
-    Position initialBossPosition = {15, 3};
+    Boss boss;
+    
 
 public:
     gameState();
@@ -33,7 +33,7 @@ public:
     void displayHUD();
     void gameLoop();
     void battleScreen(Enemy& enemy, MainCharacter& player);
-    void battleScreenBoss(Enemy& Boss, MainCharacter& player);
+    void battleScreenBoss(Boss& boss, MainCharacter& player);
     void loadSprites();
 
     //new
