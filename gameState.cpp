@@ -138,7 +138,7 @@ void gameState::readInput(char input) {
     if (bossPos.x == newX && bossPos.y == newY) {
         if (boss.isAlive() && bossPos.x == newX && bossPos.y == newY) {
             // Transition to battle screen
-            battleScreen(boss, player);
+            battleScreenBoss(boss, player);
             return;
         }
     }
@@ -198,13 +198,34 @@ void gameState::updateViewport() {
 
 void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
     cleardevice();
-    outtextxy(100, 100, (char*)"Battle Start!");
+    
+     // Display character and enemy health
+    string playerHealthText = "Player Health: " + to_string(player.getHealth());
+    outtextxy(30, 80, (char*)playerHealthText.c_str());
+    string enemyHealthText = "Enemy Health: " + to_string(enemy.getHealth());
+    outtextxy(300, 80, (char*)enemyHealthText.c_str());
 
-    // Display battle options
-    outtextxy(100, 150, (char*)"1. Attack");
-    outtextxy(100, 170, (char*)"2. Defend");
-    outtextxy(100, 190, (char*)"3. Item");
-    outtextxy(100, 210, (char*)"4. Run");
+    // Draw the table box
+    int tableLeft = 80, tableTop = 140, tableRight = 200, tableBottom = 260;
+    rectangle(tableLeft, tableTop, tableRight, tableBottom); // Outer table border
+
+    // Draw horizontal lines to create rows
+    int rowHeight = 30;
+    for (int y = tableTop + rowHeight; y < tableBottom; y += rowHeight) {
+        line(tableLeft, y, tableRight, y);
+    }
+
+    // Draw vertical divider (optional, for multiple columns)
+    // Uncomment the next line if you want a column structure
+    // line((tableLeft + tableRight) / 2, tableTop, (tableLeft + tableRight) / 2, tableBottom);
+
+    // Add text inside the table rows
+    outtextxy(100, tableTop + 5, (char*)"Battle Options"); // Table title
+    outtextxy(100, tableTop + rowHeight + 5, (char*)"1. Attack");
+    outtextxy(100, tableTop + 2 * rowHeight + 5, (char*)"2. Defend");
+    outtextxy(100, tableTop + 3 * rowHeight + 5, (char*)"3. Item");
+    outtextxy(100, tableTop + 4 * rowHeight + 5, (char*)"4. Run");
+
 
     // Placeholder for user input handling
     char choice = getch(); // Wait for user input
