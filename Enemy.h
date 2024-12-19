@@ -21,6 +21,7 @@ public:
 	void takeDamage(int damage);
     int attack() const;
 
+	int getHealth() const  {return health;}
 
 };
 
@@ -31,7 +32,7 @@ class Boss : public Enemy {
 
 	public: 
 	Boss() {
-		pos.x = 5;
+		pos.x = 15;
 		pos.y = 2;
 	}
 

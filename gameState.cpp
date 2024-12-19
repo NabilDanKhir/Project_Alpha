@@ -31,7 +31,6 @@ player.allocateInitialPoints(); // Prompt the player to allocate their initial s
 
    
     initializeBoss();  // Initialize the boss
-
     loadSprites();
 }
 
@@ -48,13 +47,19 @@ void gameState::loadSprites() {
     mobSprite = malloc(size);
     getimage(0, 0, 16, 16, mobSprite);
     cleardevice();
+
+    readimagefile("asset/enemy.bmp", 0, 0, 16, 16);
+    size = imagesize(0, 0, 16, 16);
+    bossSprite1 = malloc(size);
+    getimage(0, 0, 16, 16, bossSprite1);
+    cleardevice();
 }
 
 
 //Draw MAP
 void gameState::drawMap() {
     cleardevice();
-    int cellSize = 16;
+    int cellSize = min(getmaxx() / viewportWidth, getmaxy() / viewportHeight);
     for (int y = 0; y < viewportHeight; y++) {
         for (int x = 0; x < viewportWidth; x++) {
             int mapX = viewportX + x;
@@ -72,23 +77,27 @@ void gameState::drawMap() {
             Position enemyPos = enemy[i].getPosition();
             if (enemyPos.y >= viewportY && enemyPos.y < viewportY + viewportHeight &&
                 enemyPos.x >= viewportX && enemyPos.x < viewportX + viewportWidth) {
-                putimage((enemyPos.x - viewportX) * cellSize, (enemyPos.y - viewportY) * cellSize, mobSprite, COPY_PUT);
+                int scaledX = (enemyPos.x - viewportX) * cellSize;
+                int scaledY = (enemyPos.y - viewportY) * cellSize;
+                int scaledSize = cellSize;
+                putimage(scaledX, scaledY, mobSprite, COPY_PUT);
             }
         }
     }
 
     // Draw player
     Position mcPos = player.getMCPosition();
-    putimage((mcPos.x - viewportX) * cellSize, (mcPos.y - viewportY) * cellSize, playerSprite, COPY_PUT);
-
+    int scaledX = (mcPos.x - viewportX) * cellSize;
+    int scaledY = (mcPos.y - viewportY) * cellSize;
+    int scaledSize = cellSize;
+    putimage(scaledX, scaledY, playerSprite, COPY_PUT);
 
     //Draw Boss
     Position bossPos = boss.getBossPosition();
-    if (bossPos.y >= viewportY && bossPos.y < viewportY + viewportHeight &&
-        bossPos.x >= viewportX && bossPos.x < viewportX + viewportWidth) {
-        char symbol[2] = { 'B', '\0' };
-        outtextxy((bossPos.x - viewportX) * cellSize, (bossPos.y - viewportY) * cellSize, symbol);
-    }
+    map[bossPos.y][bossPos.x] = 'B';
+    int bossScaledX = (bossPos.x - viewportX) * cellSize;
+    int bossScaledY = (bossPos.y - viewportY) * cellSize;
+    putimage(bossScaledX, bossScaledY, bossSprite1, COPY_PUT);
 
 
 }
@@ -138,7 +147,7 @@ void gameState::readInput(char input) {
     if (bossPos.x == newX && bossPos.y == newY) {
         if (boss.isAlive() && bossPos.x == newX && bossPos.y == newY) {
             // Transition to battle screen
-            battleScreen(boss, player);
+            battleScreenBoss(boss, player);
             return;
         }
     }
@@ -198,13 +207,34 @@ void gameState::updateViewport() {
 
 void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
     cleardevice();
-    outtextxy(100, 100, (char*)"Battle Start!");
+    
+     // Display character and enemy health
+    string playerHealthText = "Player Health: " + to_string(player.getHealth());
+    outtextxy(30, 80, (char*)playerHealthText.c_str());
+    string enemyHealthText = "Enemy Health: " + to_string(enemy.getHealth());
+    outtextxy(300, 80, (char*)enemyHealthText.c_str());
 
-    // Display battle options
-    outtextxy(100, 150, (char*)"1. Attack");
-    outtextxy(100, 170, (char*)"2. Defend");
-    outtextxy(100, 190, (char*)"3. Item");
-    outtextxy(100, 210, (char*)"4. Run");
+    // Draw the table box
+    int tableLeft = 80, tableTop = 140, tableRight = 200, tableBottom = 260;
+    rectangle(tableLeft, tableTop, tableRight, tableBottom); // Outer table border
+
+    // Draw horizontal lines to create rows
+    int rowHeight = 30;
+    for (int y = tableTop + rowHeight; y < tableBottom; y += rowHeight) {
+        line(tableLeft, y, tableRight, y);
+    }
+
+    // Draw vertical divider (optional, for multiple columns)
+    // Uncomment the next line if you want a column structure
+    // line((tableLeft + tableRight) / 2, tableTop, (tableLeft + tableRight) / 2, tableBottom);
+
+    // Add text inside the table rows
+    outtextxy(100, tableTop + 5, (char*)"Battle Options"); // Table title
+    outtextxy(100, tableTop + rowHeight + 5, (char*)"1. Attack");
+    outtextxy(100, tableTop + 2 * rowHeight + 5, (char*)"2. Defend");
+    outtextxy(100, tableTop + 3 * rowHeight + 5, (char*)"3. Item");
+    outtextxy(100, tableTop + 4 * rowHeight + 5, (char*)"4. Run");
+
 
     // Placeholder for user input handling
     char choice = getch(); // Wait for user input
