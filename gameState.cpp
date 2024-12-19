@@ -48,7 +48,7 @@ void gameState::loadSprites() {
     getimage(0, 0, 16, 16, mobSprite);
     cleardevice();
 
-    readimagefile("asset/enemy.bmp", 0, 0, 16, 16);
+    readimagefile("asset/boss4.bmp", 0, 0, 16, 16);
     size = imagesize(0, 0, 16, 16);
     bossSprite1 = malloc(size);
     getimage(0, 0, 16, 16, bossSprite1);
@@ -303,6 +303,8 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         // Display character and boss health
         string playerHealthText = "Player Health: " + to_string(player.getHealth());
         outtextxy(80, 250, (char*)playerHealthText.c_str());
+        string doomMeterText = "Doom Meter: " + to_string(player.getDoom());
+        outtextxy(80, 270, (char*)doomMeterText.c_str());
         string bossHealthText = "Boss Health: " + to_string(boss.getHealth());
         outtextxy(500, 250, (char*)bossHealthText.c_str());
 
@@ -311,10 +313,16 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         rectangle(battleBoxLeft, battleBoxTop, battleBoxRight, battleBoxBottom); // Outer box for health info
 
         //Player Asset
-        readimagefile("asset/player.bmp", 0, 0, 16, 16);  // You can adjust the size of the image to match your layout
-        int size = imagesize(0, 0, 64, 64);
+        readimagefile("asset/player.bmp", 100, 130, 130, 150);  // You can adjust the size of the image to match your layout
+        int size = imagesize(100, 130, 130, 150);
         void* playerSprite = malloc(size);
-        getimage(0, 0, 64, 64, playerSprite);
+        getimage(100, 130, 130, 150, playerSprite);
+
+        //Boss Asset
+        readimagefile("asset/boss4.bmp", 400, 50, 180, 190);
+        size = imagesize(400, 50, 180, 190);
+        bossSprite1 = malloc(size);
+        getimage(400, 50, 180, 190, bossSprite1);
 
         // Draw the table box
         int tableLeft = 80, tableTop = 400, tableRight = 250, tableBottom = tableTop + (4 * 30);
@@ -341,7 +349,7 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         switch (choice) {
         case '1':
             // Attack logic
-            outtextxy(100, 250, (char*)"You chose to Attack!");
+            outtextxy(100, 300, (char*)"You chose to Attack!");
             boss.takeDamage(player.attack());
 
             // Boss attacks player if still alive
@@ -351,18 +359,18 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
             break;
         case '2':
             // Defend logic (to be implemented)
-            outtextxy(100, 250, (char*)"You chose to Defend!");
+            outtextxy(100, 300, (char*)"You chose to Defend!");
             break;
         case '3':
             // Item logic (to be implemented)
-            outtextxy(100, 250, (char*)"You chose to use an Item!");
+            outtextxy(100, 300, (char*)"You chose to use an Item!");
             break;
         case '4':
             // Run logic (to be implemented)
-            outtextxy(100, 250, (char*)"You chose to Run!");
+            outtextxy(100, 300, (char*)"You chose to Run!");
             return; // Exit the battle
         default:
-            outtextxy(100, 250, (char*)"Invalid choice!");
+            outtextxy(100, 300, (char*)"Invalid choice!");
             break;
         }
 
