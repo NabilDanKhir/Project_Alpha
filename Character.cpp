@@ -32,7 +32,7 @@ void MainCharacter::allocateInitialPoints()
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
-	std::cout << "Here is your final stat:\n";
+	std::cout << "\nHere is your final stat:\n";
     displayStats();
 }
 
