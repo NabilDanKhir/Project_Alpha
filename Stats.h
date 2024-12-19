@@ -32,12 +32,14 @@ public:
     }
     
     if (statName == "S" || statName == "s" || statName == "strength" || statName == "Strength") {
+
+    if (statName == "S" || statName == "s" || statName == "strength" || statName == "Strength") {
         ++strength;
-    } else if (statName == "I" || statName == "i" || statName == "intelligence" || statName == "Intelligence") {
+    } else if (statName == "I" || statName == "i" || statName == "I" || statName == "i" || statName == "intelligence" || statName == "Intelligence" || statName == "Intelligence") {
         ++intelligence;
-    } else if (statName == "A" || statName == "a" || statName == "agility" || statName == "Agility") {
+    } else if (statName == "A" || statName == "a" || statName == "A" || statName == "a" || statName == "agility" || statName == "Agility" || statName == "Agility") {
         ++agility;
-    } else if (statName == "L" || statName == "l" || statName == "luck" || statName == "Luck") {
+    } else if (statName == "L" || statName == "l" || statName == "L" || statName == "l" || statName == "luck" || statName == "Luck" || statName == "Luck") {
         ++luck;
     } else {
         return false; // Invalid stat name
