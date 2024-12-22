@@ -13,7 +13,7 @@ private:
     const int viewportWidth = 20; // Width of the viewport in cells
     const int viewportHeight = 10; // Height of the viewport in cells
     char map[10][20]; // The map
-    MainCharacter player; // The player
+    MainCharacter& player; // The player
 
     Enemy enemy[MAX_ENTITY]; // The enemies
     //Position initialEnemyPositions[MAX_ENTITY] { {100, 200}, {150, 250}, {200, 300},}; // Add new position
@@ -27,7 +27,7 @@ private:
     
 
 public:
-    gameState();
+    gameState(MainCharacter& player);
     void readInput(char input);
     void drawMap();
     void updateViewport();

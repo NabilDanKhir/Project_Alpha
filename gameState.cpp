@@ -1,8 +1,7 @@
 #include "gameState.h"
 #include <graphics.h>  
 
-gameState::gameState() : player(1, 1) { // Initialize player at position (1, 1)
-player.allocateInitialPoints(); // Prompt the player to allocate their initial stats
+gameState::gameState(MainCharacter& player) : player(player) { // Initialize player at position (1, 1)
 
     const char tempMap[10][20] = {
         "###################",
