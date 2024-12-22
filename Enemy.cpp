@@ -61,7 +61,7 @@ bool Boss::isAlive() const {
 
 int Boss::attack() const {
     // Implement attack logic
-    return 1; // Example attack value
+    return 2; // Example attack value
 }
 
 void Boss::takeDamage(int damage) {

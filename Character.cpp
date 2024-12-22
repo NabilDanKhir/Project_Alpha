@@ -129,3 +129,8 @@ bool attemptRun(const MainCharacter& player) {
     // Return true if random value is less than success chance
     return randomValue < successChance;
 }
+
+void MainCharacter::addGamePoints(int pts) {
+    gamePoints += pts;
+}
+

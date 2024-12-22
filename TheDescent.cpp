@@ -1,8 +1,6 @@
 #include <iostream>
 #include <graphics.h>
 #include <winbgim.h>
-#include <thread>
-#include <chrono>
 #include "gameState.h"
 #include "Character.h"
 
@@ -13,8 +11,7 @@ int main() {
     std::cout << "#             The Descent              #" << std::endl;
     std::cout << "#                                      #" << std::endl;
     std::cout << "########################################" << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-
+    std::cout << std::endl;
     std::cout << "Press Enter to start the game..." << std::endl;
     std::cin.get(); 
 
@@ -28,6 +25,36 @@ int main() {
     gameState game(player);
     game.gameLoop();
 
+    system("cls");
+
     closegraph();
+
+    int totalPts = 0;
+    totalPts = player.getGamePoints();
+
+    if (totalPts < 100) {
+
+        std::cout << "  _____" << std::endl;
+        std::cout << " /     \\" << std::endl;
+        std::cout << "| () () |" << std::endl;
+        std::cout << " \\  ^  /" << std::endl;
+        std::cout << "  |||||" << std::endl;
+        std::cout << "  |||||" << std::endl;
+
+        std::cout << std::endl;
+
+        std::cout << "Game Over! You scored " << totalPts << " points. Better luck next time!" << std::endl;
+
+        std::cout << std::endl;
+
+    } else {
+        std::cout << "The End! You scored " << totalPts << " points. Great job!" << std::endl;
+        std::cout << std::endl;
+    }
+
+    std::cout << "Press Enter to exit..." << std::endl;
+    std::cin.ignore();
+    std::cin.get();
+
     return 0;
 }

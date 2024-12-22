@@ -114,6 +114,10 @@ void gameState::gameLoop() {
         displayHUD();
         char input = getch();
         readInput(input);
+
+        if (!player.isAlive()) {
+            break;
+        }
     }
 }
 
@@ -135,9 +139,12 @@ void gameState::readInput(char input) {
         // Check for collision with enemies
         for (int i = 0; i < MAX_ENTITY; i++) {
             Position enemyPos = enemy[i].getPosition();
-            if (enemy[i].isAlive() && enemyPos.x == newX && enemyPos.y == newY) {
+            if (enemy[i].isAlive() && enemyPos.x == mcPos.x && enemyPos.y == mcPos.y) {
                 // Transition to battle screen
                 battleScreen(enemy[i], player);
+                if (!enemy[i].isAlive() && enemyPos.x == newX && enemyPos.y == newY) {
+                    player.addGamePoints(5);
+                }
                 return;
             }
         }
@@ -166,6 +173,9 @@ void gameState::readInput(char input) {
             if (enemyPos.x == mcPos.x && enemyPos.y == mcPos.y) {
                 // Transition to battle screen
                 battleScreen(enemy[i], player);
+                if (!enemy[i].isAlive() && enemyPos.x == newX && enemyPos.y == newY) {
+                    player.addGamePoints(5);
+                }
                 return;
             }
         }
@@ -176,6 +186,9 @@ void gameState::readInput(char input) {
     if (boss.isAlive() && bossPos.x == mcPos.x && bossPos.y == mcPos.y) {
         // Transition to battle screen
         battleScreenBoss(boss, player);
+        if (!boss.isAlive() && bossPos.x == mcPos.x && bossPos.y == mcPos.y) {
+                    player.addGamePoints(20);
+                }
         return;
     }
 
@@ -203,97 +216,102 @@ void gameState::updateViewport() {
 }
 
 void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
-    cleardevice();
+    while(enemy.isAlive() && player.isAlive()) {
+
+        cleardevice();
    
-    // Display character and enemy health
-    string playerHealthText = "Player Health: " + to_string(player.getHealth());
-    outtextxy(80, 250, (char*)playerHealthText.c_str());
-    string doomMeterText = "Doom Meter: " + to_string(player.getDoom());
-    outtextxy(80, 270, (char*)doomMeterText.c_str());
-    string enemyHealthText = "Enemy Health: " + to_string(enemy.getHealth());
-    outtextxy(450, 250, (char*)enemyHealthText.c_str());
+        // Display character and enemy health
+        string playerHealthText = "Player Health: " + to_string(player.getHealth());
+        outtextxy(80, 250, (char*)playerHealthText.c_str());
+        string doomMeterText = "Doom Meter: " + to_string(player.getDoom());
+        outtextxy(80, 270, (char*)doomMeterText.c_str());
+        string enemyHealthText = "Enemy Health: " + to_string(enemy.getHealth());
+        outtextxy(450, 250, (char*)enemyHealthText.c_str());
 
-    // Draw Battle Scene / Player & Enemy
-    int battleBoxLeft = 80, battleBoxTop = 10, battleBoxRight = 650, battleBoxBottom = 235;
-    rectangle(battleBoxLeft, battleBoxTop, battleBoxRight, battleBoxBottom); // Outer box for health info
+        // Draw Battle Scene / Player & Enemy
+        int battleBoxLeft = 80, battleBoxTop = 10, battleBoxRight = 650, battleBoxBottom = 235;
+        rectangle(battleBoxLeft, battleBoxTop, battleBoxRight, battleBoxBottom); // Outer box for health info
 
-    //Player Assets
-    readimagefile("asset/player.bmp", 100, 60, 180, 190);  // You can adjust the size of the image to match your layout
-    int size = imagesize(100, 60, 180, 190);
-    void* playerSprite = malloc(size);
-    getimage(100, 60, 180, 190, playerSprite);
+        //Player Assets
+        readimagefile("asset/player.bmp", 100, 60, 180, 190);  // You can adjust the size of the image to match your layout
+        int size = imagesize(100, 60, 180, 190);
+        void* playerSprite = malloc(size);
+        getimage(100, 60, 180, 190, playerSprite);
 
-    //Enemy Assets
-    readimagefile("asset/enemy.bmp", 400, 50, 180, 190);
-    size = imagesize(400, 50, 180, 190);
-    void* mobSprite = malloc(size);
-    getimage(400, 50, 180, 190, mobSprite);
+        //Enemy Assets
+        readimagefile("asset/enemy.bmp", 400, 50, 180, 190);
+        size = imagesize(400, 50, 180, 190);
+        void* mobSprite = malloc(size);
+        getimage(400, 50, 180, 190, mobSprite);
 
-    // Draw the table box
-    int tableLeft = 80, tableTop = 400, tableRight = 250, tableBottom = tableTop + (4 * 30);
-    rectangle(tableLeft, tableTop, tableRight, tableBottom); // Outer table border
+        // Draw the table box
+        int tableLeft = 80, tableTop = 400, tableRight = 250, tableBottom = tableTop + (4 * 30);
+        rectangle(tableLeft, tableTop, tableRight, tableBottom); // Outer table border
 
-    // Draw horizontal lines to create rows
-    int rowHeight = 30;
-    for (int y = tableTop + rowHeight; y < tableBottom; y += rowHeight) {
-        line(tableLeft, y, tableRight, y);
+        // Draw horizontal lines to create rows
+        int rowHeight = 30;
+        for (int y = tableTop + rowHeight; y < tableBottom; y += rowHeight) {
+            line(tableLeft, y, tableRight, y);
+        }
+
+        // Add text inside the table rows
+        outtextxy((tableLeft + tableRight) / 2 - 50, tableTop - 30, (char*)"Battle Options");
+        
+        int textXOffset = tableLeft + 10; // Indent text slightly
+        outtextxy(textXOffset, tableTop + 5, (char*)"1. Attack");
+        outtextxy(textXOffset, tableTop + rowHeight + 5, (char*)"2. Defend");
+        outtextxy(textXOffset, tableTop + 2 * rowHeight + 5, (char*)"3. Item");
+        outtextxy(textXOffset, tableTop + 3 * rowHeight + 5, (char*)"4. Run");
+        
+        // Placeholder for user input handling
+        char choice = getch(); // Wait for user input
+
+        switch (choice) {
+        case '1':
+            // Attack logic (to be implroved)
+            outtextxy(100, 300, (char*)"You chose to Attack!");
+            enemy.takeDamage(player.attack());
+
+            // Enemy attacks player if still alive
+            if (enemy.isAlive()) {
+                player.takeDamage(enemy.attack());
+            }
+            break;
+        case '2':
+            // Defend logic (to be implemented)
+            outtextxy(100, 300, (char*)"You chose to Defend!");
+            break;
+        case '3':
+            // Item logic (to be implemented)
+            outtextxy(100, 300, (char*)"You chose to use an Item!");
+            break;
+        case '4': // Run
+            if (attemptRun()) {
+            enemy.takeDamage(999); // Instantly defeat the enemy
+            return; // Return to main game loop
+            } 
+            else {
+            // Enemy attacks player
+            if(enemy.isAlive()) {
+                player.takeDamage(enemy.attack());
+            }
+            break;
+            }
+
+        default:
+            outtextxy(100, 300, (char*)"Invalid choice!");
+            break;
+        }
+
+        getch(); // Wait for user input to continue
+
+        // Return to the main game screen
+        cleardevice();
+        drawMap();
+        displayHUD();
+
     }
-
-    // Add text inside the table rows
-    outtextxy((tableLeft + tableRight) / 2 - 50, tableTop - 30, (char*)"Battle Options");
     
-    int textXOffset = tableLeft + 10; // Indent text slightly
-    outtextxy(textXOffset, tableTop + 5, (char*)"1. Attack");
-    outtextxy(textXOffset, tableTop + rowHeight + 5, (char*)"2. Defend");
-    outtextxy(textXOffset, tableTop + 2 * rowHeight + 5, (char*)"3. Item");
-    outtextxy(textXOffset, tableTop + 3 * rowHeight + 5, (char*)"4. Run");
-    
-    // Placeholder for user input handling
-    char choice = getch(); // Wait for user input
-
-    switch (choice) {
-    case '1':
-        // Attack logic (to be implroved)
-        outtextxy(100, 300, (char*)"You chose to Attack!");
-        enemy.takeDamage(player.attack());
-
-        // Enemy attacks player if still alive
-        if (enemy.isAlive()) {
-            player.takeDamage(enemy.attack());
-        }
-        break;
-    case '2':
-        // Defend logic (to be implemented)
-        outtextxy(100, 300, (char*)"You chose to Defend!");
-        break;
-    case '3':
-        // Item logic (to be implemented)
-        outtextxy(100, 300, (char*)"You chose to use an Item!");
-        break;
-    case '4': // Run
-        if (attemptRun()) {
-        enemy.takeDamage(999); // Instantly defeat the enemy
-        return; // Return to main game loop
-        } 
-        else {
-        // Enemy attacks player
-        if(enemy.isAlive()) {
-            player.takeDamage(enemy.attack());
-        }
-        break;
-        }
-
-    default:
-        outtextxy(100, 300, (char*)"Invalid choice!");
-        break;
-    }
-
-    getch(); // Wait for user input to continue
-
-    // Return to the main game screen
-    cleardevice();
-    drawMap();
-    displayHUD();
 }
 
 

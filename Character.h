@@ -10,6 +10,7 @@ using namespace std;
 class MainCharacter {
 	private:
 		Position position;
+		int gamePoints = 0;
 		int health;
 		int doomCounter;
 		const int maxHealth = 10;
@@ -35,8 +36,6 @@ class MainCharacter {
 		void takeDamage(int damage);
     	int attack() const;
 
-		
-
 		int getStrength() const { return stats.getStrength(); }
     	int getIntelligence() const { return stats.getIntelligence(); }
     	int getAgility() const { return stats.getAgility(); }
@@ -48,6 +47,10 @@ class MainCharacter {
     	void setLuck(int lck) { stats.setLuck(lck); }
 		void allocateInitialPoints();
 		void displayStats() const;
+		void addGamePoints(int pts);
+    	int getGamePoints() const {
+			return gamePoints;
+		};
 
 };
 
