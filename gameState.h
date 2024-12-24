@@ -16,7 +16,7 @@ private:
     MainCharacter& player; // The player
 
     Enemy enemy[MAX_ENTITY]; // The enemies
-    //Position initialEnemyPositions[MAX_ENTITY] { {100, 200}, {150, 250}, {200, 300},}; // Add new position
+    bool enemyPlaced[MAX_ENTITY]; // Track if enemies are placed on the map
     
     void* playerSprite;
     void* mobSprite;
@@ -24,7 +24,6 @@ private:
 
     //NEW BOSS
     Boss boss;
-    
 
 public:
     gameState(MainCharacter& player);
@@ -38,6 +37,9 @@ public:
     void loadSprites();
     void initializeBoss();
     bool attemptRun();
+
+    void placeEnemiesRandomly();
+    void checkRandomEncounter();
 };
 
 #endif // GAMESTATE_H

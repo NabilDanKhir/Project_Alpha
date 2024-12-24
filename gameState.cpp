@@ -1,5 +1,7 @@
 #include "gameState.h"
 #include <graphics.h>  
+#include <cstdlib>
+#include <ctime>
 
 gameState::gameState(MainCharacter& player) : player(player) { // Initialize player at position (1, 1)
 
@@ -31,6 +33,8 @@ gameState::gameState(MainCharacter& player) : player(player) { // Initialize pla
    
     initializeBoss();  // Initialize the boss
     loadSprites();
+    std::srand(std::time(0)); // Seed for random number generation
+    placeEnemiesRandomly();
 }
 
 void gameState::loadSprites() {
@@ -119,81 +123,6 @@ void gameState::gameLoop() {
             break;
         }
     }
-}
-
-void gameState::readInput(char input) {
-    // Calculate the new position based on input
-    Position mcPos = player.getMCPosition();
-    int newX = mcPos.x;
-    int newY = mcPos.y;
-
-    switch (input) {
-    case 'w': newY -= 1; break;
-    case 's': newY += 1; break;
-    case 'a': newX -= 1; break;
-    case 'd': newX += 1; break;
-    }
-
-    // Check for collision with walls and boundaries
-    if (newX >= 0 && newX < 20 && newY >= 0 && newY < 10 && map[newY][newX] != '#') {
-        // Check for collision with enemies
-        for (int i = 0; i < MAX_ENTITY; i++) {
-            Position enemyPos = enemy[i].getPosition();
-            if (enemy[i].isAlive() && enemyPos.x == mcPos.x && enemyPos.y == mcPos.y) {
-                // Transition to battle screen
-                battleScreen(enemy[i], player);
-                if (!enemy[i].isAlive() && enemyPos.x == newX && enemyPos.y == newY) {
-                    player.addGamePoints(5);
-                }
-                return;
-            }
-        }
-
-        // Clear the player's old position
-        map[mcPos.y][mcPos.x] = '.';
-
-        // Move the player
-        player.move(newX - mcPos.x, newY - mcPos.y);
-
-        // Update mcPos to the new position
-        mcPos = player.getMCPosition();
-
-        // Set the player's new position
-        map[mcPos.y][mcPos.x] = 'P';
-    }
-    
-    // Update enemies' positions after player moves
-    for (int i = 0; i < MAX_ENTITY; i++) {
-        if (enemy[i].isAlive()) {
-            Position enemyPos = enemy[i].getPosition();
-            enemy[i].moveTowards(player.getMCPosition(), enemy, MAX_ENTITY);
-
-            // Check for collision with the player after moving
-            enemyPos = enemy[i].getPosition();
-            if (enemyPos.x == mcPos.x && enemyPos.y == mcPos.y) {
-                // Transition to battle screen
-                battleScreen(enemy[i], player);
-                if (!enemy[i].isAlive() && enemyPos.x == newX && enemyPos.y == newY) {
-                    player.addGamePoints(5);
-                }
-                return;
-            }
-        }
-    }
-
-    // Check for collision with the boss after player moves
-    Position bossPos = boss.getBossPosition();
-    if (boss.isAlive() && bossPos.x == mcPos.x && bossPos.y == mcPos.y) {
-        // Transition to battle screen
-        battleScreenBoss(boss, player);
-        if (!boss.isAlive() && bossPos.x == mcPos.x && bossPos.y == mcPos.y) {
-                    player.addGamePoints(20);
-                }
-        return;
-    }
-
-    // Update the viewport
-    updateViewport();
 }
 
 void gameState::initializeBoss() {
@@ -438,4 +367,70 @@ bool gameState::attemptRun() {
     
     return roll < escapeChance;
     
+}
+
+void gameState::placeEnemiesRandomly() {
+    for (int i = 0; i < MAX_ENTITY; ++i) {
+        int x = std::rand() % 20;
+        int y = std::rand() % 10;
+        enemy[i] = Enemy(x, y);
+        enemyPlaced[i] = false; // Enemies are not placed initially
+    }
+}
+
+void gameState::checkRandomEncounter() {
+    for (int i = 0; i < MAX_ENTITY; ++i) {
+        if (!enemyPlaced[i] && (std::rand() % 100 < 40)) { // 10% chance to place an enemy
+            enemyPlaced[i] = true;
+        }
+    }
+}
+
+void gameState::readInput(char input) {
+    // Calculate the new position based on input
+    Position mcPos = player.getMCPosition();
+    int newX = mcPos.x;
+    int newY = mcPos.y;
+
+    switch (input) {
+    case 'w': newY -= 1; break;
+    case 's': newY += 1; break;
+    case 'a': newX -= 1; break;
+    case 'd': newX += 1; break;
+    }
+
+    // Check for collision with walls and boundaries
+    if (newX >= 0 && newX < 20 && newY >= 0 && newY < 10 && map[newY][newX] != '#') {
+
+        if (std::rand() % 100 < 40) {
+            int enemyIndex = std::rand() % MAX_ENTITY;
+            battleScreen(enemy[enemyIndex], player);
+        }
+
+        // Clear the player's old position
+        map[mcPos.y][mcPos.x] = '.';
+
+        // Move the player
+        player.move(newX - mcPos.x, newY - mcPos.y);
+
+        // Update mcPos to the new position
+        mcPos = player.getMCPosition();
+
+        // Set the player's new position
+        map[mcPos.y][mcPos.x] = 'P';
+    }
+
+    // Check for collision with the boss after player moves
+    Position bossPos = boss.getBossPosition();
+    if (boss.isAlive() && bossPos.x == mcPos.x && bossPos.y == mcPos.y) {
+        // Transition to battle screen
+        battleScreenBoss(boss, player);
+        if (!boss.isAlive() && bossPos.x == mcPos.x && bossPos.y == mcPos.y) {
+                    player.addGamePoints(20);
+                }
+        return;
+    }
+
+    // Update the viewport
+    updateViewport();
 }
