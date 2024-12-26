@@ -17,13 +17,13 @@ public:
     bool isAlive() const;
     Position getPosition() const;
     void takeDamage(int damage);
-    int attack() const;
+    virtual int attack() const;
 
-    int getHealth() const  {return health;}
+    virtual int getHealth() const  {return health;}
 
 };
 
-class Boss {
+class Boss : public Enemy {
     private:
     Position pos;
     int health;
@@ -37,7 +37,6 @@ class Boss {
 
     //BOSS (NEW)
     Boss(int x, int y);
-    Position setBossPosition() const;
     Position getBossPosition() const;
     bool isAlive() const;
     void takeDamage(int damage);

@@ -45,12 +45,6 @@ void gameState::loadSprites() {
     getimage(0, 0, 16, 16, playerSprite);
     cleardevice();
 
-    readimagefile("asset/enemy.bmp", 0, 0, 16, 16);
-    size = imagesize(0, 0, 16, 16);
-    mobSprite = malloc(size);
-    getimage(0, 0, 16, 16, mobSprite);
-    cleardevice();
-
     readimagefile("asset/boss4.bmp", 0, 0, 16, 16);
     size = imagesize(0, 0, 16, 16);
     bossSprite1 = malloc(size);
@@ -70,20 +64,6 @@ void gameState::drawMap() {
             if (mapY < 20 && mapX < 20) { // Ensure within bounds
                 char symbol[2] = { map[mapY][mapX], '\0' };
                 outtextxy(x * cellSize, y * cellSize, symbol);
-            }
-        }
-    }
-
-    // Draw enemies
-    for (int i = 0; i < MAX_ENTITY; i++) {
-        if (enemy[i].isAlive()) {
-            Position enemyPos = enemy[i].getPosition();
-            if (enemyPos.y >= viewportY && enemyPos.y < viewportY + viewportHeight &&
-                enemyPos.x >= viewportX && enemyPos.x < viewportX + viewportWidth) {
-                int scaledX = (enemyPos.x - viewportX) * cellSize;
-                int scaledY = (enemyPos.y - viewportY) * cellSize;
-                int scaledSize = cellSize;
-                putimage(scaledX, scaledY, mobSprite, COPY_PUT);
             }
         }
     }
@@ -108,7 +88,7 @@ void gameState::drawMap() {
 
 void gameState::displayHUD() {
     char hudText[50];
-    sprintf(hudText, "Health: %d / 10 Doom: %d / 50", player.getHealth(), player.getDoom());
+    sprintf(hudText, "Health: %d / 20 Doom: %d / 50", player.getHealth(), player.getDoom());
     outtextxy(10, 600, hudText);
 }
 
