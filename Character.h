@@ -13,7 +13,7 @@ class MainCharacter {
 		int gamePoints = 0;
 		int health;
 		int doomCounter;
-		const int maxHealth = 10;
+		int maxHealth = 10;
 		const int doomLimit = 50;
 		int inventory[5];
 		Stats stats;
@@ -40,12 +40,18 @@ class MainCharacter {
     	int getIntelligence() const { return stats.getIntelligence(); }
     	int getAgility() const { return stats.getAgility(); }
     	int getLuck() const { return stats.getLuck(); }
+		int getLuckBonus(int baseStat) const {
+    	return (baseStat * stats.getLuck()) / 20; // Correct access through `stats`
+		}
+
+
 
 		void setStrength(int str) { stats.setStrength(str); }
     	void setIntelligence(int intl) { stats.setIntelligence(intl); }
     	void setAgility(int agi) { stats.setAgility(agi); }
     	void setLuck(int lck) { stats.setLuck(lck); }
 		void allocateInitialPoints();
+		void recalculateHealth();
 		void displayStats() const;
 		void addGamePoints(int pts);
     	int getGamePoints() const {

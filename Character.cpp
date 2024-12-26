@@ -33,6 +33,9 @@ void MainCharacter::allocateInitialPoints()
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
+        else {
+            recalculateHealth(); // Update health after any stat allocation
+        }
     }
 	system("cls");
 	std::cout << "Here is your final stat Ethan:\n";
@@ -41,11 +44,12 @@ void MainCharacter::allocateInitialPoints()
 }
 
 void MainCharacter::displayStats() const {
-    std::cout << "Strength: " << stats.getStrength() << "\n";
-    std::cout << "Intelligence: " << stats.getIntelligence() << "\n";
-    std::cout << "Agility: " << stats.getAgility() << "\n";
+    std::cout << "Strength: " << stats.getStrength() << " (Base: " << stats.strength << ")\n";
+    std::cout << "Intelligence: " << stats.getIntelligence() << " (Base: " << stats.intelligence << ")\n";
+    std::cout << "Agility: " << stats.getAgility() << " (Base: " << stats.agility << ")\n";
     std::cout << "Luck: " << stats.getLuck() << "\n";
 }
+
 
 void MainCharacter::move(int mcx, int mcy) {
 	position.x += mcx;
@@ -94,43 +98,52 @@ void MainCharacter::takeDamage(int damage) {
 }
 
 int MainCharacter::attack() const {
-    // Implement attack logic
-      int baseDamage = stats.getStrength();
-	  int luckBonus = stats.getLuck() / 1;
-	  int totalDamage = baseDamage + luckBonus;
-	  
-	  int randomFactor = std::rand() % 5;
-	  totalDamage += randomFactor;
-	  
-	  if (std::rand() % 100 < stats.getLuck()) 
-	  {
-		totalDamage *= 2;
-	  }
+    int baseDamage = stats.getStrength(); // Strength includes luck bonus
+    int luckBonus = stats.getLuck() / 2; // Example: Add half of luck to damage
+    int totalDamage = baseDamage + luckBonus;
 
-	  return totalDamage;
-}
+    // Random factor and critical hit chance
+    int randomFactor = std::rand() % 5;
+    totalDamage += randomFactor;
 
-bool attemptRun(const MainCharacter& player) {
-    int agility = player.getAgility();
-    int successChance = 0;
-
-    // Determine success chance based on agility
-    if (agility < 2) {
-        successChance = 30; // 30% chance
-    } else if (agility < 4) {
-        successChance = 60; // 60% chance
-    } else if (agility <= 6) {
-        successChance = 90; // 90% chance
+    if (std::rand() % 100 < stats.getLuck()) {
+        totalDamage *= 2; // Critical hit
     }
 
-    // Generate a random number between 0 and 99
-    int randomValue = std::rand() % 100;
+    return totalDamage;
+}
 
-    // Return true if random value is less than success chance
+
+bool attemptRun(const MainCharacter& player) {
+    int agility = player.getAgility(); // Includes luck bonus
+    int luckBoost = player.getLuck() / 2; // Luck directly improves success chance
+    int successChance = 0;
+
+    if (agility < 2) {
+        successChance = 30 + luckBoost; // Base 30%, boosted by luck
+    } else if (agility < 4) {
+        successChance = 60 + luckBoost; // Base 60%, boosted by luck
+    } else if (agility <= 6) {
+        successChance = 90 + luckBoost; // Base 90%, boosted by luck
+    }
+
+    int randomValue = std::rand() % 100;
     return randomValue < successChance;
 }
 
+
 void MainCharacter::addGamePoints(int pts) {
     gamePoints += pts;
+}
+
+void MainCharacter::recalculateHealth() {
+    // Calculate new max health based on intelligence
+    int newMaxHealth = maxHealth + stats.getIntelligence() * 2; // For example, 2 extra health per intelligence point
+    int healthDifference = newMaxHealth - maxHealth;
+    health += healthDifference; // Add the difference to current health, if any
+    maxHealth = newMaxHealth; // Update the maximum health
+    if (health > maxHealth) {
+        health = maxHealth; // Ensure current health doesn't exceed the new max
+    }
 }
 

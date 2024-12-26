@@ -12,11 +12,24 @@ public:
     Stats() : strength(1), intelligence(1), agility(1), luck(1), availablePoints(0) {}
     Stats(int str, int intl, int agi, int lck, int points = 5) : strength(str), intelligence(intl), agility(agi), luck(lck), availablePoints(points){}
 
-    int getStrength() const { return strength; }
-    int getIntelligence() const { return intelligence; }
-    int getAgility() const { return agility; }
-    int getLuck() const { return luck; }
+    int getStrength() const {
+    return strength + getLuckBonus(strength); // Include bonus
+    }
+    int getIntelligence() const {
+    return intelligence + getLuckBonus(intelligence);
+    }
+    int getAgility() const {
+    return agility + getLuckBonus(agility);
+    }
+    int getLuck() const {
+    return luck; // Luck does not modify itself
+    }
     int getAvailablePoints() const { return availablePoints; }
+    int getLuckBonus(int baseStat) const {
+    return (baseStat * luck) / 20; // Calculate luck bonus for baseStat
+    }  
+
+
 
     void setStrength(int str) { strength = str; }
     void setIntelligence(int intl) { intelligence = intl; }
