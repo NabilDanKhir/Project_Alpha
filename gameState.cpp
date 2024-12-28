@@ -461,13 +461,18 @@ void gameState::readInput(char input) {
     }
 
     // Check for collision with walls and boundaries
-    if (newX >= 0 && newX <= 20 && newY >= 0 && newY < 10 && (map[newY][newX] != '#' || (newX == 18 && newY == 2))) {
+    if (newX >= 0 && newX < 20 && newY >= 0 && newY < 10 && (map[newY][newX] != '#' || (newX == 18 && newY == 2))) {
 
         // Check if the player reaches the far right of the map at y = 2
-        if (newX == 18 && newY == 2) { // Adjusted to match the map width and specific y position
-            // Transition to the next floor
-            transitionToNextFloor();
-            return;  // Exit the current movement logic
+        if (newX == 18 && newY == 2) { 
+            if (!boss.isAlive()) {
+                // Transition to the next floor
+                transitionToNextFloor();
+                return;  // Exit the current movement logic
+            } else {
+                // Prevent moving out of bounds if the boss is alive
+                return;
+            }
         }
 
         if (std::rand() % 100 < 40) {
