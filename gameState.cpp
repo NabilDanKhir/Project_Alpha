@@ -328,7 +328,7 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         getimage(100, 130, 130, 150, playerSprite);
 
         //Boss Asset
-        readimagefile("asset/boss4.bmp", 400, 50, 180, 190);
+        readimagefile("asset/boss5.bmp", 400, 50, 180, 190);
         size = imagesize(400, 50, 180, 190);
         bossSprite1 = malloc(size);
         getimage(400, 50, 180, 190, bossSprite1);
