@@ -13,6 +13,7 @@ private:
     const int viewportWidth = 20; // Width of the viewport in cells
     const int viewportHeight = 10; // Height of the viewport in cells
     char map[10][20]; // The map
+    int currentFloor;
     MainCharacter& player; // The player
 
     Enemy enemy[MAX_ENTITY]; // The enemies
@@ -21,6 +22,7 @@ private:
     void* playerSprite;
     void* mobSprite;
     void* bossSprite1;
+    void* albabSprite;
 
     //NEW BOSS
     Boss boss;
@@ -37,6 +39,10 @@ public:
     void loadSprites();
     void initializeBoss();
     bool attemptRun();
+
+    void generateNewFloor();
+    void displayFloorNumber();
+    void transitionToNextFloor(); 
 
     void placeEnemiesRandomly();
     void checkRandomEncounter();

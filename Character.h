@@ -58,6 +58,10 @@ class MainCharacter {
 			return gamePoints;
 		};
 
+		void setMCPosition(int x, int y){
+			position.x = x;
+			position.y = y;
+		}
 };
 
 #endif // !CHARACTER_H

@@ -3,9 +3,9 @@
 #include <cstdlib>
 #include <ctime>
 
-gameState::gameState(MainCharacter& player) : player(player) { // Initialize player at position (1, 1)
+gameState::gameState(MainCharacter& player) : player(player), currentFloor(5) { // Initialize player at position (1, 1)
 
-    const char tempMap[10][20] = {
+    const char tempMap[10][20] = {   
         "###################",
         "#.................#",
         "#.................#",
@@ -18,7 +18,6 @@ gameState::gameState(MainCharacter& player) : player(player) { // Initialize pla
         for (int j = 0; j < 20; ++j)
             map[i][j] = tempMap[i][j];
 
-    // Set the player's initial position in the map
     Position mcPos = player.getMCPosition();
     map[mcPos.y][mcPos.x] = 'P';
 
@@ -37,18 +36,96 @@ gameState::gameState(MainCharacter& player) : player(player) { // Initialize pla
     placeEnemiesRandomly();
 }
 
+//Go NextFLoor
+void gameState::transitionToNextFloor() {
+    // Check if the current floor is already 0
+    if (currentFloor == 1) {
+        return; // Do not transition to the next floor
+    }
+
+    // Decrease the floor number
+    currentFloor--;
+
+    // Generate a new floor (map layout)
+    generateNewFloor();
+
+    // Update the display of the current floor
+    displayFloorNumber();
+}
+
+// Display Floor Number
+void gameState::displayFloorNumber() {
+    char hudText[50];
+    sprintf(hudText, "Floor: %d", currentFloor);
+    outtextxy(10, 700, hudText);
+}
+
+//Make Floor
+void gameState::generateNewFloor() {
+    // Create a new map layout
+    const char newMap[10][20] = {
+        "###################",
+        "#.................#",
+        "#.................#",
+        "#.................#",
+        "#.................#",
+        "###################"
+    };
+
+    // Copy the new layout into the current map
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 20; ++j) {
+            map[i][j] = newMap[i][j];
+        }
+    }
+
+    // Reset player's position to (1, 1)
+    player.setMCPosition(1, 1);
+    Position mcPos = player.getMCPosition();
+    map[mcPos.y][mcPos.x] = 'P';
+
+    // Reset enemies for the new floor
+    for (int i = 0; i < MAX_ENTITY; ++i) {
+        if (i == 0) {
+            // Place one enemy at a fixed location
+            enemy[i] = Enemy(5, 5);
+            map[5][5] = 'E';  // Represent enemy on the map
+        } else {
+            // Place other enemies off-map or randomly
+            enemy[i] = Enemy(0, 0);
+        }
+    }
+
+    // Optionally initialize a new boss or keep the same
+    //initializeBoss();
+
+    // Place enemies randomly on the new map
+    placeEnemiesRandomly();
+
+    // Reload sprites or any other floor-specific assets
+    loadSprites();
+}
+
 void gameState::loadSprites() {
-    
+    // Load player sprite
     readimagefile("asset/player.bmp", 0, 0, 16, 16);
     int size = imagesize(0, 0, 16, 16);
     playerSprite = malloc(size);
     getimage(0, 0, 16, 16, playerSprite);
     cleardevice();
 
-    readimagefile("asset/boss4.bmp", 0, 0, 16, 16);
+    // Load boss sprite
+    readimagefile("asset/boss5.bmp", 0, 0, 16, 16);
     size = imagesize(0, 0, 16, 16);
     bossSprite1 = malloc(size);
     getimage(0, 0, 16, 16, bossSprite1);
+    cleardevice();
+
+    // Load albab sprite
+    readimagefile("asset/Albab.bmp", 0, 0, 16, 16);
+    size = imagesize(0, 0, 16, 16);
+    albabSprite = malloc(size);
+    getimage(0, 0, 16, 16, albabSprite);
     cleardevice();
 }
 
@@ -62,8 +139,12 @@ void gameState::drawMap() {
             int mapX = viewportX + x;
             int mapY = viewportY + y;
             if (mapY < 20 && mapX < 20) { // Ensure within bounds
-                char symbol[2] = { map[mapY][mapX], '\0' };
-                outtextxy(x * cellSize, y * cellSize, symbol);
+                if (mapX == 18 && mapY == 2) {
+                    putimage(x * cellSize, y * cellSize, albabSprite, COPY_PUT);
+                } else {
+                    char symbol[2] = { map[mapY][mapX], '\0' };
+                    outtextxy(x * cellSize, y * cellSize, symbol);
+                }
             }
         }
     }
@@ -75,7 +156,7 @@ void gameState::drawMap() {
     int scaledSize = cellSize;
     putimage(scaledX, scaledY, playerSprite, COPY_PUT);
 
-    //Draw Boss
+    // Draw Boss
     if (boss.isAlive()) {
         Position bossPos = boss.getBossPosition();
         int bossScaledX = (bossPos.x - viewportX) * cellSize;
@@ -83,19 +164,19 @@ void gameState::drawMap() {
         int scaledSize = cellSize;
         putimage(bossScaledX, bossScaledY, bossSprite1, COPY_PUT);
     }
-    
 }
 
 void gameState::displayHUD() {
     char hudText[50];
     sprintf(hudText, "Health: %d / 20 Doom: %d / 50", player.getHealth(), player.getDoom());
-    outtextxy(10, 600, hudText);
+    outtextxy(10, 680, hudText);
 }
 
 void gameState::gameLoop() {
     while (player.isAlive()) {
         drawMap();
         displayHUD();
+        displayFloorNumber(); // Ensure floor number is displayed in the game loop
         char input = getch();
         readInput(input);
 
@@ -380,7 +461,14 @@ void gameState::readInput(char input) {
     }
 
     // Check for collision with walls and boundaries
-    if (newX >= 0 && newX < 20 && newY >= 0 && newY < 10 && map[newY][newX] != '#') {
+    if (newX >= 0 && newX <= 20 && newY >= 0 && newY < 10 && (map[newY][newX] != '#' || (newX == 18 && newY == 2))) {
+
+        // Check if the player reaches the far right of the map at y = 2
+        if (newX == 18 && newY == 2) { // Adjusted to match the map width and specific y position
+            // Transition to the next floor
+            transitionToNextFloor();
+            return;  // Exit the current movement logic
+        }
 
         if (std::rand() % 100 < 40) {
             int enemyIndex = std::rand() % MAX_ENTITY;
@@ -406,8 +494,8 @@ void gameState::readInput(char input) {
         // Transition to battle screen
         battleScreenBoss(boss, player);
         if (!boss.isAlive() && bossPos.x == mcPos.x && bossPos.y == mcPos.y) {
-                    player.addGamePoints(20);
-                }
+            player.addGamePoints(20);
+        }
         return;
     }
 
