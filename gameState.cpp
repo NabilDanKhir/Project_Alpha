@@ -39,12 +39,18 @@ gameState::gameState(MainCharacter& player) : player(player), currentFloor(5) { 
 //Go NextFLoor
 void gameState::transitionToNextFloor() {
     // Check if the current floor is already 0
-    if (currentFloor == 1) {
+   /* if (currentFloor == 1) {
         return; // Do not transition to the next floor
-    }
+    }*/
 
     // Decrease the floor number
     currentFloor--;
+
+    // Check if the player has reached floor 0
+    if (currentFloor == 0) {
+        endGame(); // End the game
+        return;
+    }
 
     // Generate a new floor (map layout)
     generateNewFloor();
@@ -57,7 +63,7 @@ void gameState::transitionToNextFloor() {
 void gameState::displayFloorNumber() {
     char hudText[50];
     sprintf(hudText, "Floor: %d", currentFloor);
-    outtextxy(10, 700, hudText);
+    outtextxy(10, 550, hudText);
 }
 
 //Make Floor
@@ -169,7 +175,11 @@ void gameState::drawMap() {
 void gameState::displayHUD() {
     char hudText[50];
     sprintf(hudText, "Health: %d / 20 Doom: %d / 50", player.getHealth(), player.getDoom());
-    outtextxy(10, 680, hudText);
+    outtextxy(10, 600, hudText);
+
+    char pointsText[50];
+    sprintf(pointsText, "Points: %d", player.getGamePoints());
+    outtextxy(300, 600, pointsText);
 }
 
 void gameState::gameLoop() {
@@ -177,6 +187,7 @@ void gameState::gameLoop() {
         drawMap();
         displayHUD();
         displayFloorNumber(); // Ensure floor number is displayed in the game loop
+        player.getGamePoints(); // Ensure points are updated in the game loop
         char input = getch();
         readInput(input);
 
@@ -258,13 +269,15 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
 
         switch (choice) {
         case '1':
-            // Attack logic (to be implroved)
+            // Attack logic (to be improved)
             outtextxy(100, 300, (char*)"You chose to Attack!");
             enemy.takeDamage(player.attack());
 
             // Enemy attacks player if still alive
             if (enemy.isAlive()) {
                 player.takeDamage(enemy.attack());
+            } else {
+                player.addGamePoints(5); // Add 5 points when enemy is defeated
             }
             break;
         case '2':
@@ -506,4 +519,18 @@ void gameState::readInput(char input) {
 
     // Update the viewport
     updateViewport();
+}
+
+void gameState::endGame() {
+    cleardevice();
+    int screenWidth = getmaxx();
+    int screenHeight = getmaxy();
+    const char* message = "Congratulations! You have reached the bottom floor...";
+    int textWidth = textwidth((char*)message);
+    int textHeight = textheight((char*)message);
+    int x = (screenWidth - textWidth) / 2;
+    int y = (screenHeight - textHeight) / 2;
+    outtextxy(x, y, (char*)message);
+    getch(); // Wait for user input to close the game
+    exit(0); // Exit the game
 }
