@@ -283,7 +283,7 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         char choice = getch(); // Wait for user input
 
         switch (choice) {
-        case '1':
+        case '1': {
             // Attack logic (to be improved)
             outtextxy(100, 300, (char*)"You chose to Attack!");
             enemy.takeDamage(player.attack());
@@ -295,31 +295,58 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
                 player.addGamePoints(5); // Add 5 points when enemy is defeated
             }
             break;
-        case '2':
-            // Defend logic (to be implemented)
-            outtextxy(100, 300, (char*)"You chose to Defend!");
+        }
+        case '2': {
+            // Defend logic
+           outtextxy(100, 300, (char*)"You chose to Defend!");
+
+            int defenseValue = player.getIntelligence(); // Defense based on intelligence
+            int incomingDamage = enemy.attack();
+            int damageToPlayer;
+
+            // Calculate success chance based on intelligence
+            int successChance = defenseValue * 10; // Example: 10% success chance per intelligence point
+            int randomValue = std::rand() % 100; // Random value between 0 and 99
+
+            if (randomValue < successChance) {
+                // Successful defense
+                damageToPlayer = incomingDamage - defenseValue;
+
+                if (damageToPlayer < 0) {
+                    int deflectedDamage = 1; // Deflect only 1 damage
+                    damageToPlayer = 0; // No damage to player
+                    enemy.takeDamage(deflectedDamage); // Deflect damage back to enemy
+                }
+            } else {
+                // Unsuccessful defense, take full damage
+                damageToPlayer = incomingDamage;
+            }
+
+            player.takeDamage(damageToPlayer);
             break;
-        case '3':
+        }
+        case '3': {
             // Item logic (to be implemented)
             outtextxy(100, 300, (char*)"You chose to use an Item!");
             player.heal(5); // Heal the player by 5 HP
             break;
-        case '4': // Run
+        }
+        case '4': { // Run
             if (attemptRun()) {
-            enemy.takeDamage(999); // Instantly defeat the enemy
-            return; // Return to main game loop
-            } 
-            else {
-            // Enemy attacks player
-            if(enemy.isAlive()) {
-                player.takeDamage(enemy.attack());
+                enemy.takeDamage(999); // Instantly defeat the enemy
+                return; // Return to main game loop
+            } else {
+                // Enemy attacks player
+                if(enemy.isAlive()) {
+                    player.takeDamage(enemy.attack());
+                }
+                break;
             }
-            break;
-            }
-
-        default:
+        }
+        default: {
             outtextxy(100, 300, (char*)"Invalid choice!");
             break;
+        }
         }
 
         getch(); // Wait for user input to continue
