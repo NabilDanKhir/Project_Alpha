@@ -44,8 +44,6 @@ void gameState::transitionToNextFloor() {
     // Decrease the floor number
     currentFloor--;
 
-    // Check if the player has reached floor 0
-
     // Generate a new floor (map layout)
     generateNewFloor();
 
@@ -186,6 +184,7 @@ void gameState::gameLoop() {
         }
 
         if (!player.isAlive()) {
+            endGame();
             break;
         }
         
@@ -311,7 +310,7 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
 
         else if (player.doomed()) {
             outtextxy(100, 300, (char*)"You have been defeated by Doom!");
-            getch();
+            endGame();
             break;  // End the game
         }
 
@@ -415,6 +414,7 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         outtextxy(100, 300, (char*)"You defeated the Boss!");
     } else if (!player.isAlive()) {
         outtextxy(100, 300, (char*)"You were defeated by the Boss!");
+        endGame();
     }
 
     getch(); // Wait for user input to continueaaaaaaaaaaaaaaaaa
@@ -535,16 +535,18 @@ void gameState::endGame() {
     cleardevice();
     int screenWidth = getmaxx();
     int screenHeight = getmaxy();
-    if (player.isAlive()) {
-        const char* message = "Congratulations! You have reached the bottom floor...";
+    if (!player.isAlive()) {
+
+        const char* message = "Too bad! You have died never reaching the bottom floor...";
         int textWidth = textwidth((char*)message);
         int textHeight = textheight((char*)message);
         int x = (screenWidth - textWidth) / 2;
         int y = (screenHeight - textHeight) / 2;
         outtextxy(x, y, (char*)message);
         getch(); // Wait for user input to close the game
+        
     } else {
-        const char* message = "Too bad! You have died never reaching the bottom floor...";
+        const char* message = "Congratulations! You have reached the bottom floor..." ;
         int textWidth = textwidth((char*)message);
         int textHeight = textheight((char*)message);
         int x = (screenWidth - textWidth) / 2;
@@ -570,10 +572,6 @@ void gameState::loadBossSprite(int floor) {
 }
 
 void gameState::spawnBoss() {
-    // Set boss position to a fixed or random location
-    boss = Boss(15, 2); // Example position
-    map[boss.getBossPosition().y][boss.getBossPosition().x] = 'B'; // Represent boss on the map
-
-    // Load the boss sprite for the current floor
+    boss = Boss(15, 2); 
     loadBossSprite(currentFloor);
 }
