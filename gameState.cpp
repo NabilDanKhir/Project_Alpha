@@ -42,14 +42,10 @@ gameState::gameState(MainCharacter& player) : player(player), currentFloor(5) { 
 //Go NextFLoor
 void gameState::transitionToNextFloor() {
 
+    savedDoomCounter = player.getDoom();
+
     // Decrease the floor number
     currentFloor--;
-
-    // Check if the player has reached floor 0
-    if (currentFloor == 0) {
-        endGame(); // End the game
-        return;
-    }
 
     // Generate a new floor (map layout)
     generateNewFloor();
@@ -90,22 +86,13 @@ void gameState::generateNewFloor() {
     map[mcPos.y][mcPos.x] = 'P';
 
     // Reset enemies for the new floor
-    for (int i = 0; i < MAX_ENTITY; ++i) {
-        if (i == 0) {
-            // Place one enemy at a fixed location
-            enemy[i] = Enemy(5, 5);
-            map[5][5] = 'E';  // Represent enemy on the map
-        } else {
-            // Place other enemies off-map or randomly
-            enemy[i] = Enemy(0, 0);
-        }
-    }
-
-    // Optionally initialize a new boss or keep the same
-    //initializeBoss();
+    enemy[0] = Enemy(10, 3);
 
     // Place enemies randomly on the new map
     placeEnemiesRandomly();
+
+    // Spawn the boss on the new floor
+    spawnBoss();
     placeItemsRandomly();
 
     // Reload sprites or any other floor-specific assets
@@ -118,13 +105,6 @@ void gameState::loadSprites() {
     int size = imagesize(0, 0, 16, 16);
     playerSprite = malloc(size);
     getimage(0, 0, 16, 16, playerSprite);
-    cleardevice();
-
-    // Load boss sprite
-    readimagefile("asset/boss5.bmp", 0, 0, 16, 16);
-    size = imagesize(0, 0, 16, 16);
-    bossSprite1 = malloc(size);
-    getimage(0, 0, 16, 16, bossSprite1);
     cleardevice();
 
     // Load albab sprite
@@ -185,7 +165,6 @@ void gameState::drawMap() {
         Position bossPos = boss.getBossPosition();
         int bossScaledX = (bossPos.x - viewportX) * cellSize;
         int bossScaledY = (bossPos.y - viewportY) * cellSize;
-        int scaledSize = cellSize;
         putimage(bossScaledX, bossScaledY, bossSprite1, COPY_PUT);
     }
 
@@ -193,10 +172,22 @@ void gameState::drawMap() {
 }
 
 void gameState::displayHUD() {
+    // Get the current health, max health, and doom values
+    int currentHealth = player.getHealth();
+    int maxHealth = player.getMaxHealth(); // Use the getter method
+    int doom = player.getDoom();
+
+    // Ensure health does not exceed max health
+    if (currentHealth > maxHealth) {
+        currentHealth = maxHealth;
+    }
+
+    // Display health and doom values
     char hudText[50];
-    sprintf(hudText, "Health: %d / 20 Doom: %d / 50", player.getHealth(), player.getDoom());
+    sprintf(hudText, "Health: %d / %d Doom: %d / 50", player.getHealth(), maxHealth, player.getDoom());
     outtextxy(10, 600, hudText);
 
+    // Display points
     char pointsText[50];
     sprintf(pointsText, "Points: %d", player.getGamePoints());
     outtextxy(300, 600, pointsText);
@@ -211,9 +202,16 @@ void gameState::gameLoop() {
         char input = getch();
         readInput(input);
 
-        if (!player.isAlive()) {
+        if (currentFloor == 0) {
+            endGame();
             break;
         }
+
+        if (!player.isAlive()) {
+            endGame();
+            break;
+        }
+        
     }
 }
 
@@ -288,7 +286,7 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         char choice = getch(); // Wait for user input
 
         switch (choice) {
-        case '1':
+        case '1': {
             // Attack logic (to be improved)
             outtextxy(100, 300, (char*)"You chose to Attack!");
             enemy.takeDamage(player.attack());
@@ -297,14 +295,42 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
             if (enemy.isAlive()) {
                 player.takeDamage(enemy.attack());
             } else {
+                player.doomDecrease(1);  // Doom decreases only if enemy is defeated
+                outtextxy(100, 300, (char*)"Enemy defeated!");
                 player.addGamePoints(5); // Add 5 points when enemy is defeated
             }
             break;
-        case '2':
-            // Defend logic (to be implemented)
-            outtextxy(100, 300, (char*)"You chose to Defend!");
+        }
+        case '2': {
+            // Defend logic
+           outtextxy(100, 300, (char*)"You chose to Defend!");
+
+            int defenseValue = player.getIntelligence(); // Defense based on intelligence
+            int incomingDamage = enemy.attack();
+            int damageToPlayer;
+
+            // Calculate success chance based on intelligence
+            int successChance = defenseValue * 10; // Example: 10% success chance per intelligence point
+            int randomValue = std::rand() % 100; // Random value between 0 and 99
+
+            if (randomValue < successChance) {
+                // Successful defense
+                damageToPlayer = incomingDamage - defenseValue;
+
+                if (damageToPlayer < 0) {
+                    int deflectedDamage = 1; // Deflect only 1 damage
+                    damageToPlayer = 0; // No damage to player
+                    enemy.takeDamage(deflectedDamage); // Deflect damage back to enemy
+                }
+            } else {
+                // Unsuccessful defense, take full damage
+                damageToPlayer = incomingDamage;
+            }
+
+            player.takeDamage(damageToPlayer);
             break;
-        case '3':
+        }
+        case '3': {
             // Item logic (to be implemented)
             outtextxy(100, 300, (char*)"You chose to use an Item!");
             if (enemy.isAlive()){
@@ -312,25 +338,32 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
             }
             player.heal(5); // Heal the player by 5 HP
             break;
-        case '4': // Run
+        }
+        case '4': { // Run
             if (attemptRun()) {
-            enemy.takeDamage(999); // Instantly defeat the enemy
-            return; // Return to main game loop
-            } 
-            else {
-            // Enemy attacks player
-            if(enemy.isAlive()) {
-                player.takeDamage(enemy.attack());
+                enemy.takeDamage(999); // Instantly defeat the enemy
+                return; // Return to main game loop
+            } else {
+                // Enemy attacks player
+                if(enemy.isAlive()) {
+                    player.takeDamage(enemy.attack());
+                }
+                break;
             }
-            break;
-            }
-
-        default:
+        }
+        default: {
             outtextxy(100, 300, (char*)"Invalid choice!");
             break;
         }
+        }
 
         getch(); // Wait for user input to continue
+
+        if (player.doomed()) {
+            outtextxy(100, 300, (char*)"You have been defeated by Doom!");
+            endGame();
+            break;  // End the game
+        }
 
         // Return to the main game screen
         cleardevice();
@@ -365,7 +398,9 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         getimage(100, 130, 130, 150, playerSprite);
 
         //Boss Asset
-        readimagefile("asset/boss5.bmp", 400, 50, 180, 190);
+        char BossSpritePath[10];
+        sprintf(BossSpritePath, "asset/boss%d.bmp", currentFloor);
+        readimagefile(BossSpritePath, 400, 50, 180, 190);
         size = imagesize(400, 50, 180, 190);
         bossSprite1 = malloc(size);
         getimage(400, 50, 180, 190, bossSprite1);
@@ -430,9 +465,10 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         outtextxy(100, 300, (char*)"You defeated the Boss!");
     } else if (!player.isAlive()) {
         outtextxy(100, 300, (char*)"You were defeated by the Boss!");
+        endGame();
     }
 
-    getch(); // Wait for user input to continue
+    getch(); // Wait for user input to continueaaaaaaaaaaaaaaaaa
 
     // Return to the main game screen
     cleardevice();
@@ -615,12 +651,43 @@ void gameState::endGame() {
     cleardevice();
     int screenWidth = getmaxx();
     int screenHeight = getmaxy();
-    const char* message = "Congratulations! You have reached the bottom floor...";
-    int textWidth = textwidth((char*)message);
-    int textHeight = textheight((char*)message);
-    int x = (screenWidth - textWidth) / 2;
-    int y = (screenHeight - textHeight) / 2;
-    outtextxy(x, y, (char*)message);
-    getch(); // Wait for user input to close the game
-    exit(0); // Exit the game
+    if (!player.isAlive()) {
+
+        const char* message = "Too bad! You have died never reaching the bottom floor...";
+        int textWidth = textwidth((char*)message);
+        int textHeight = textheight((char*)message);
+        int x = (screenWidth - textWidth) / 2;
+        int y = (screenHeight - textHeight) / 2;
+        outtextxy(x, y, (char*)message);
+        getch(); // Wait for user input to close the game
+        
+    } else {
+        const char* message = "Congratulations! You have reached the bottom floor..." ;
+        int textWidth = textwidth((char*)message);
+        int textHeight = textheight((char*)message);
+        int x = (screenWidth - textWidth) / 2;
+        int y = (screenHeight - textHeight) / 2;
+        outtextxy(x, y, (char*)message);
+        getch(); // Wait for user input to close the game
+    }
+    
+
+}
+
+void gameState::loadBossSprite(int floor) {
+    if (bossSprite1) {
+        free(bossSprite1); // Free the previous sprite memory
+    }
+    char spritePath[50];
+    sprintf(spritePath, "asset/boss%d.bmp", floor);
+    readimagefile(spritePath, 0, 0, 16, 16);
+    int size = imagesize(0, 0, 16, 16);
+    bossSprite1 = malloc(size);
+    getimage(0, 0, 16, 16, bossSprite1);
+    cleardevice();
+}
+
+void gameState::spawnBoss() {
+    boss = Boss(15, 2); 
+    loadBossSprite(currentFloor);
 }

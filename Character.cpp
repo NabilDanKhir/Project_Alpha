@@ -57,30 +57,38 @@ void MainCharacter::move(int mcx, int mcy) {
 }
 
 bool MainCharacter::doomed() {
-	return doomCounter >= 50;
+    return doomCounter >= doomLimit;
 }
+
 
 bool MainCharacter::isAlive() {
 	return health > 0;
 }
 
-void MainCharacter::doomIncrease(int amt) {
-	doomCounter += amt;
+void MainCharacter::doomIncrease(int amount) {
+    doomCounter += amount;
+    if (doomCounter > doomLimit) doomCounter = doomLimit; // Ensure Doom does not exceed the limit
+
+    if (doomed()) {
+        health = 0; // Player dies due to maximum Doom
+        std::cout << "You have succumbed to your Doom. Game Over.\n";
+    }
 }
 
-void MainCharacter::doomDecrease(int amt) {
-	if (doomCounter > 0 ){
-		doomCounter -= amt;
-	}
+
+void MainCharacter::doomDecrease(int amount) {
+    doomCounter -= amount;
+    if (doomCounter < 0) doomCounter = 0; // Ensure it doesn't go negative
 }
 
 int MainCharacter::getHealth() {
 	return health;
 }
 
-int MainCharacter::getDoom() {
-	return doomCounter;
+int MainCharacter::getDoom() const {
+    return doomCounter;
 }
+
 
 Position MainCharacter::getMCPosition() const {
 	return position;
@@ -95,6 +103,12 @@ void MainCharacter::takeDamage(int damage) {
 
     health -= damage;
     if (health < 0) health = 0;
+
+    doomIncrease(damage); 
+    
+    if (doomed()) {
+        health = 0;  // The player dies due to Doom
+    }
 }
 
 int MainCharacter::attack() const {

@@ -22,6 +22,7 @@ private:
     const int viewportHeight = 10; // Height of the viewport in cells
     char map[10][20]; // The map
     int currentFloor;
+    int savedDoomCounter;
     MainCharacter& player; // The player
 
     Enemy enemy[MAX_ENTITY]; // The enemies
@@ -68,6 +69,9 @@ public:
     void placeItemsRandomly();
 
     void endGame();
+
+    void spawnBoss();
+    void loadBossSprite(int floor);
 };
 
 #endif // GAMESTATE_H

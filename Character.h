@@ -31,7 +31,7 @@ class MainCharacter {
 		void doomDecrease(int amount);
 
 		int getHealth();
-		int getDoom();
+		int getDoom() const;
 		Position getMCPosition() const;
 		void takeDamage(int damage);
     	int attack() const;
@@ -65,6 +65,11 @@ class MainCharacter {
 			position.x = x;
 			position.y = y;
 		}
+
+		int getMaxHealth() const {
+    		return maxHealth;
+		}
+
 };
 
 #endif // !CHARACTER_H
