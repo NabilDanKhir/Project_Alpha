@@ -51,7 +51,7 @@ int main() {
         std::cout << std::endl;
         
         std::cout << "Your journey ends here... for now." << std::endl;
-        std::cout << "The End! You scored " << totalPts << " points. Great job!" << std::endl;
+        std::cout << "The End! You scored " << totalPts << " / 225 points. Great job!" << std::endl;
         std::cout << std::endl;
 
     } else {
@@ -72,7 +72,7 @@ int main() {
         std::cout << "|_______________________________|" << std::endl;
         std::cout << std::endl;
 
-        std::cout << "Game Over! You scored " << totalPts << " points. Better luck next time!" << std::endl;
+        std::cout << "Game Over! You scored " << totalPts << " / 225 points. Better luck next time!" << std::endl;
 
         std::cout << std::endl;
     }
