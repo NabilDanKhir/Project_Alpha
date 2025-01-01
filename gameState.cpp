@@ -184,7 +184,7 @@ void gameState::displayHUD() {
 
     // Display health and doom values
     char hudText[50];
-    sprintf(hudText, "Health: %d / %d Doom: %d / 50", player.getHealth(), maxHealth, player.getDoom());
+    sprintf(hudText, "Health: %d / %d Doom: %d / 35", player.getHealth(), maxHealth, player.getDoom());
     outtextxy(10, 600, hudText);
 
     // Display points
