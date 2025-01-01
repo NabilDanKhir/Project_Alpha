@@ -38,21 +38,11 @@ gameState::gameState(MainCharacter& player) : player(player), currentFloor(5) { 
 
 //Go NextFLoor
 void gameState::transitionToNextFloor() {
-    // Check if the current floor is already 0
-   /* if (currentFloor == 1) {
-        return; // Do not transition to the next floor
-    }*/
 
     savedDoomCounter = player.getDoom();
 
     // Decrease the floor number
     currentFloor--;
-
-    // Check if the player has reached floor 0
-    if (currentFloor == 0) {
-        endGame(); // End the game
-        return;
-    }
 
     // Generate a new floor (map layout)
     generateNewFloor();
@@ -93,22 +83,13 @@ void gameState::generateNewFloor() {
     map[mcPos.y][mcPos.x] = 'P';
 
     // Reset enemies for the new floor
-    for (int i = 0; i < MAX_ENTITY; ++i) {
-        if (i == 0) {
-            // Place one enemy at a fixed location
-            enemy[i] = Enemy(5, 5);
-            map[5][5] = 'E';  // Represent enemy on the map
-        } else {
-            // Place other enemies off-map or randomly
-            enemy[i] = Enemy(0, 0);
-        }
-    }
-
-    // Optionally initialize a new boss or keep the same
-    //initializeBoss();
+    enemy[0] = Enemy(10, 3);
 
     // Place enemies randomly on the new map
     placeEnemiesRandomly();
+
+    // Spawn the boss on the new floor
+    spawnBoss();
 
     // Reload sprites or any other floor-specific assets
     loadSprites();
@@ -120,13 +101,6 @@ void gameState::loadSprites() {
     int size = imagesize(0, 0, 16, 16);
     playerSprite = malloc(size);
     getimage(0, 0, 16, 16, playerSprite);
-    cleardevice();
-
-    // Load boss sprite
-    readimagefile("asset/boss5.bmp", 0, 0, 16, 16);
-    size = imagesize(0, 0, 16, 16);
-    bossSprite1 = malloc(size);
-    getimage(0, 0, 16, 16, bossSprite1);
     cleardevice();
 
     // Load albab sprite
@@ -169,7 +143,6 @@ void gameState::drawMap() {
         Position bossPos = boss.getBossPosition();
         int bossScaledX = (bossPos.x - viewportX) * cellSize;
         int bossScaledY = (bossPos.y - viewportY) * cellSize;
-        int scaledSize = cellSize;
         putimage(bossScaledX, bossScaledY, bossSprite1, COPY_PUT);
     }
 }
@@ -205,7 +178,13 @@ void gameState::gameLoop() {
         char input = getch();
         readInput(input);
 
+        if (currentFloor == 0) {
+            endGame();
+            break;
+        }
+
         if (!player.isAlive()) {
+            endGame();
             break;
         }
         
@@ -292,6 +271,8 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
             if (enemy.isAlive()) {
                 player.takeDamage(enemy.attack());
             } else {
+                player.doomDecrease(1);  // Doom decreases only if enemy is defeated
+                outtextxy(100, 300, (char*)"Enemy defeated!");
                 player.addGamePoints(5); // Add 5 points when enemy is defeated
             }
             break;
@@ -351,14 +332,9 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
 
         getch(); // Wait for user input to continue
 
-        if (!enemy.isAlive()) {
-            player.doomDecrease(3);  // Doom decreases only if enemy is defeated
-            outtextxy(100, 300, (char*)"Enemy defeated!");
-        }
-
-        else if (player.doomed()) {
+        if (player.doomed()) {
             outtextxy(100, 300, (char*)"You have been defeated by Doom!");
-            getch();
+            endGame();
             break;  // End the game
         }
 
@@ -395,7 +371,9 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         getimage(100, 130, 130, 150, playerSprite);
 
         //Boss Asset
-        readimagefile("asset/boss5.bmp", 400, 50, 180, 190);
+        char BossSpritePath[10];
+        sprintf(BossSpritePath, "asset/boss%d.bmp", currentFloor);
+        readimagefile(BossSpritePath, 400, 50, 180, 190);
         size = imagesize(400, 50, 180, 190);
         bossSprite1 = malloc(size);
         getimage(400, 50, 180, 190, bossSprite1);
@@ -460,6 +438,7 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         outtextxy(100, 300, (char*)"You defeated the Boss!");
     } else if (!player.isAlive()) {
         outtextxy(100, 300, (char*)"You were defeated by the Boss!");
+        endGame();
     }
 
     getch(); // Wait for user input to continueaaaaaaaaaaaaaaaaa
@@ -580,12 +559,43 @@ void gameState::endGame() {
     cleardevice();
     int screenWidth = getmaxx();
     int screenHeight = getmaxy();
-    const char* message = "Congratulations! You have reached the bottom floor...";
-    int textWidth = textwidth((char*)message);
-    int textHeight = textheight((char*)message);
-    int x = (screenWidth - textWidth) / 2;
-    int y = (screenHeight - textHeight) / 2;
-    outtextxy(x, y, (char*)message);
-    getch(); // Wait for user input to close the game
-    exit(0); // Exit the game
+    if (!player.isAlive()) {
+
+        const char* message = "Too bad! You have died never reaching the bottom floor...";
+        int textWidth = textwidth((char*)message);
+        int textHeight = textheight((char*)message);
+        int x = (screenWidth - textWidth) / 2;
+        int y = (screenHeight - textHeight) / 2;
+        outtextxy(x, y, (char*)message);
+        getch(); // Wait for user input to close the game
+        
+    } else {
+        const char* message = "Congratulations! You have reached the bottom floor..." ;
+        int textWidth = textwidth((char*)message);
+        int textHeight = textheight((char*)message);
+        int x = (screenWidth - textWidth) / 2;
+        int y = (screenHeight - textHeight) / 2;
+        outtextxy(x, y, (char*)message);
+        getch(); // Wait for user input to close the game
+    }
+    
+
+}
+
+void gameState::loadBossSprite(int floor) {
+    if (bossSprite1) {
+        free(bossSprite1); // Free the previous sprite memory
+    }
+    char spritePath[50];
+    sprintf(spritePath, "asset/boss%d.bmp", floor);
+    readimagefile(spritePath, 0, 0, 16, 16);
+    int size = imagesize(0, 0, 16, 16);
+    bossSprite1 = malloc(size);
+    getimage(0, 0, 16, 16, bossSprite1);
+    cleardevice();
+}
+
+void gameState::spawnBoss() {
+    boss = Boss(15, 2); 
+    loadBossSprite(currentFloor);
 }

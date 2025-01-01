@@ -71,9 +71,8 @@ void MainCharacter::doomIncrease(int amount) {
 
     if (doomed()) {
         health = 0; // Player dies due to maximum Doom
+        std::cout << "You have succumbed to your Doom. Game Over.\n";
     }
-
-    std::cout << "You have succumbed to your Doom. Game Over.\n";
 }
 
 

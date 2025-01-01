@@ -49,6 +49,9 @@ public:
     void checkRandomEncounter();
     
     void endGame();
+
+    void spawnBoss();
+    void loadBossSprite(int floor);
 };
 
 #endif // GAMESTATE_H

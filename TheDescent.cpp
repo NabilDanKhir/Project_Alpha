@@ -23,6 +23,7 @@ int main() {
     initwindow(screenWidth, screenHeight, "The Descent");
 
     gameState game(player);
+    game.generateNewFloor(); // Ensure the first floor is generated
     game.gameLoop();
 
     system("cls");
@@ -32,23 +33,47 @@ int main() {
     int totalPts = 0;
     totalPts = player.getGamePoints();
 
-    if (totalPts < 100) {
+    if (totalPts > 100 && player.isAlive()) {
 
-        std::cout << "  _____" << std::endl;
-        std::cout << " /     \\" << std::endl;
-        std::cout << "| () () |" << std::endl;
-        std::cout << " \\  ^  /" << std::endl;
-        std::cout << "  |||||" << std::endl;
-        std::cout << "  |||||" << std::endl;
+        std::cout << "      __________" << std::endl;
+        std::cout << "     |          |" << std::endl;
+        std::cout << "     |          |" << std::endl;
+        std::cout << "     |          |" << std::endl;
+        std::cout << "     |   EXIT   |" << std::endl;
+        std::cout << "     |          |" << std::endl;
+        std::cout << "     |__________|" << std::endl;
+        std::cout << "      ||      ||" << std::endl;
+        std::cout << "      ||      ||" << std::endl;
+        std::cout << "      ||______||" << std::endl;
+        std::cout << "      ||______||" << std::endl;
+        std::cout << "      ||      ||" << std::endl;
+        std::cout << "      ||______||" << std::endl;
+        std::cout << std::endl;
+        
+        std::cout << "Your journey ends here... for now." << std::endl;
+        std::cout << "The End! You scored " << totalPts << " points. Great job!" << std::endl;
+        std::cout << std::endl;
 
+    } else {
+        std::cout << "               _____" << std::endl;
+        std::cout << "             /      \\" << std::endl;
+        std::cout << "             | () () |" << std::endl;
+        std::cout << "             \\  ^   /" << std::endl;
+        std::cout << "               ||||| " << std::endl;
+        std::cout << "               |||||" << std::endl;
+        std::cout << std::endl;
+
+        std::cout << "    YOUR JOURNEY ENDS HERE..." << std::endl;
+        std::cout << "   ____________________________" << std::endl;
+        std::cout << "  /                            \\" << std::endl;
+        std::cout << " /   Here lies an adventurer    \\" << std::endl;
+        std::cout << "/   who dared to descend but     \\" << std::endl;
+        std::cout << "|   fell to the perils below.    |" << std::endl;
+        std::cout << "|_______________________________|" << std::endl;
         std::cout << std::endl;
 
         std::cout << "Game Over! You scored " << totalPts << " points. Better luck next time!" << std::endl;
 
-        std::cout << std::endl;
-
-    } else {
-        std::cout << "The End! You scored " << totalPts << " points. Great job!" << std::endl;
         std::cout << std::endl;
     }
 
