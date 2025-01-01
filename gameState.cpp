@@ -287,6 +287,7 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         case '3':
             // Item logic (to be implemented)
             outtextxy(100, 300, (char*)"You chose to use an Item!");
+            player.heal(5); // Heal the player by 5 HP
             break;
         case '4': // Run
             if (attemptRun()) {
@@ -386,6 +387,7 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         case '3':
             // Item logic (to be implemented)
             outtextxy(100, 300, (char*)"You chose to use an Item!");
+            player.heal(5); // Heal the player by 5 HP
             break;
         case '4':
             // Run logic (to be implemented)
