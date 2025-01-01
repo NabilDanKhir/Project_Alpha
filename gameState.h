@@ -47,6 +47,8 @@ public:
 
     void placeEnemiesRandomly();
     void checkRandomEncounter();
+    
+    void endGame();
 };
 
 #endif // GAMESTATE_H

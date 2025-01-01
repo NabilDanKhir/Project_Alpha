@@ -54,6 +54,8 @@ class MainCharacter {
 		void recalculateHealth();
 		void displayStats() const;
 		void addGamePoints(int pts);
+		void heal(int amount);
+
     	int getGamePoints() const {
 			return gamePoints;
 		};

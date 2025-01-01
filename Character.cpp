@@ -151,6 +151,14 @@ void MainCharacter::addGamePoints(int pts) {
     gamePoints += pts;
 }
 
+void MainCharacter::heal(int amount)
+{
+    health += amount;
+    if (health > maxHealth) {
+        health = maxHealth;
+    }
+}
+
 void MainCharacter::recalculateHealth() {
     // Calculate new max health based on intelligence
     int newMaxHealth = maxHealth + stats.getIntelligence() * 2; // For example, 2 extra health per intelligence point
