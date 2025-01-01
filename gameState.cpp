@@ -175,10 +175,22 @@ void gameState::drawMap() {
 }
 
 void gameState::displayHUD() {
+    // Get the current health, max health, and doom values
+    int currentHealth = player.getHealth();
+    int maxHealth = player.getMaxHealth(); // Use the getter method
+    int doom = player.getDoom();
+
+    // Ensure health does not exceed max health
+    if (currentHealth > maxHealth) {
+        currentHealth = maxHealth;
+    }
+
+    // Display health and doom values
     char hudText[50];
-    sprintf(hudText, "Health: %d / 20 Doom: %d / 50", player.getHealth(), player.getDoom());
+    sprintf(hudText, "Health: %d / %d Doom: %d / 50", player.getHealth(), maxHealth, player.getDoom());
     outtextxy(10, 600, hudText);
 
+    // Display points
     char pointsText[50];
     sprintf(pointsText, "Points: %d", player.getGamePoints());
     outtextxy(300, 600, pointsText);
@@ -197,10 +209,6 @@ void gameState::gameLoop() {
             break;
         }
         
-        else if (player.doomed()) {
-            outtextxy(100, 300, (char*)"You have been defeated by Doom!");
-            break;  // End the game
-        }
     }
 }
 
@@ -319,6 +327,12 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         if (!enemy.isAlive()) {
             player.doomDecrease(3);  // Doom decreases only if enemy is defeated
             outtextxy(100, 300, (char*)"Enemy defeated!");
+        }
+
+        else if (player.doomed()) {
+            outtextxy(100, 300, (char*)"You have been defeated by Doom!");
+            getch();
+            break;  // End the game
         }
 
         // Return to the main game screen
