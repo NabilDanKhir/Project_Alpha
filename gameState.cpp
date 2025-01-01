@@ -264,12 +264,14 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         getimage(400, 50, 180, 190, mobSprite);
 
         // Draw the table box
-        int tableLeft = 80, tableTop = 400, tableRight = 250, tableBottom = tableTop + (4 * 30);
+        int tableLeft = 80, tableTop = 400, tableRight = 250, tableBottom = tableTop + (3 * 30);
         rectangle(tableLeft, tableTop, tableRight, tableBottom); // Outer table border
 
         // Draw horizontal lines to create rows
         int rowHeight = 30;
-        for (int y = tableTop + rowHeight; y < tableBottom; y += rowHeight) {
+        int numberOfRows = 3;
+        for (int i = 1; i <= numberOfRows; ++i) {
+            int y = tableTop + i * rowHeight;
             line(tableLeft, y, tableRight, y);
         }
 
@@ -279,8 +281,7 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         int textXOffset = tableLeft + 10; // Indent text slightly
         outtextxy(textXOffset, tableTop + 5, (char*)"1. Attack");
         outtextxy(textXOffset, tableTop + rowHeight + 5, (char*)"2. Defend");
-        outtextxy(textXOffset, tableTop + 2 * rowHeight + 5, (char*)"3. Item");
-        outtextxy(textXOffset, tableTop + 3 * rowHeight + 5, (char*)"4. Run");
+        outtextxy(textXOffset, tableTop + 2 * rowHeight + 5, (char*)"3. Run");
         
         // Placeholder for user input handling
         char choice = getch(); // Wait for user input
@@ -330,16 +331,7 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
             player.takeDamage(damageToPlayer);
             break;
         }
-        case '3': {
-            // Item logic (to be implemented)
-            outtextxy(100, 300, (char*)"You chose to use an Item!");
-            if (enemy.isAlive()){
-                player.takeDamage(enemy.attack());
-            }
-            player.heal(5); // Heal the player by 5 HP
-            break;
-        }
-        case '4': { // Run
+        case '3': { // Run
             if (attemptRun()) {
                 enemy.takeDamage(999); // Instantly defeat the enemy
                 return; // Return to main game loop
@@ -405,13 +397,14 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         bossSprite1 = malloc(size);
         getimage(400, 50, 180, 190, bossSprite1);
 
-        // Draw the table box
-        int tableLeft = 80, tableTop = 400, tableRight = 250, tableBottom = tableTop + (4 * 30);
+        int tableLeft = 80, tableTop = 400, tableRight = 250, tableBottom = tableTop + (3 * 30);
         rectangle(tableLeft, tableTop, tableRight, tableBottom); // Outer table border
 
         // Draw horizontal lines to create rows
         int rowHeight = 30;
-        for (int y = tableTop + rowHeight; y < tableBottom; y += rowHeight) {
+        int numberOfRows = 3;
+        for (int i = 1; i <= numberOfRows; ++i) {
+            int y = tableTop + i * rowHeight;
             line(tableLeft, y, tableRight, y);
         }
 
@@ -421,8 +414,7 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         int textXOffset = tableLeft + 10; // Indent text slightly
         outtextxy(textXOffset, tableTop + 5, (char*)"1. Attack");
         outtextxy(textXOffset, tableTop + rowHeight + 5, (char*)"2. Defend");
-        outtextxy(textXOffset, tableTop + 2 * rowHeight + 5, (char*)"3. Item");
-        outtextxy(textXOffset, tableTop + 3 * rowHeight + 5, (char*)"4. Run");
+        outtextxy(textXOffset, tableTop + 2 * rowHeight + 5, (char*)"3. Run");
 
         // Placeholder for user input handling
         char choice = getch(); // Wait for user input
@@ -443,11 +435,6 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
             outtextxy(100, 300, (char*)"You chose to Defend!");
             break;
         case '3':
-            // Item logic (to be implemented)
-            outtextxy(100, 300, (char*)"You chose to use an Item!");
-            player.heal(5); // Heal the player by 5 HP
-            break;
-        case '4':
             // Run logic (to be implemented)
             outtextxy(100, 300, (char*)"You can't RUN Coward!");
             break;
@@ -518,8 +505,8 @@ void gameState::placeMedkitRandomly(std::set<std::pair<int, int>>& usedPositions
         int x, y;
         std::pair<int, int> position;
         do {
-            x = std::rand() % (20 - 2) + 1; // Ensure within wall bounds
-            y = std::rand() % (10 - 2) + 1; // Ensure within wall bounds
+            x = std::rand() % 18 + 1; // Ensure within wall bounds
+            y = std::rand() % 4 + 1; // Ensure within wall bounds
             position = std::make_pair(x, y);
         } while (usedPositions.find(position) != usedPositions.end() || map[y][x] == '#');
         
@@ -536,8 +523,8 @@ void gameState::placeSyringeRandomly(std::set<std::pair<int, int>>& usedPosition
         int x, y;
         std::pair<int, int> position;
         do {
-            x = std::rand() % (20 - 2) + 1; // Ensure within wall bounds
-            y = std::rand() % (10 - 2) + 1; // Ensure within wall bounds
+            x = std::rand() % 18 + 1; // Ensure within wall bounds
+            y = std::rand() % 4 + 1; // Ensure within wall bounds
             position = std::make_pair(x, y);
         } while (usedPositions.find(position) != usedPositions.end() || map[y][x] == '#');
         
