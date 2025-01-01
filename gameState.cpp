@@ -322,10 +322,12 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
                     int deflectedDamage = 1; // Deflect only 1 damage
                     damageToPlayer = 0; // No damage to player
                     enemy.takeDamage(deflectedDamage); // Deflect damage back to enemy
+                    outtextxy(100, 300, (char*)"You successfuly Defend!");
                 }
             } else {
                 // Unsuccessful defense, take full damage
                 damageToPlayer = incomingDamage;
+                outtextxy(100, 300, (char*)"You failed to Defend!");
             }
 
             player.takeDamage(damageToPlayer);

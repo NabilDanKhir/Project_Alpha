@@ -14,7 +14,7 @@ class MainCharacter {
 		int health;
 		int doomCounter;
 		int maxHealth = 10;
-		const int doomLimit = 50;
+		const int doomLimit = 35;
 		int inventory[5];
 		Stats stats;
 
