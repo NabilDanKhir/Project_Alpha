@@ -23,6 +23,7 @@ int main() {
     initwindow(screenWidth, screenHeight, "The Descent");
 
     gameState game(player);
+    game.generateNewFloor(); // Ensure the first floor is generated
     game.gameLoop();
 
     system("cls");
