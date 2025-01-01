@@ -39,6 +39,8 @@ gameState::gameState(MainCharacter& player) : player(player), currentFloor(5) { 
 //Go NextFLoor
 void gameState::transitionToNextFloor() {
 
+    savedDoomCounter = player.getDoom();
+
     // Decrease the floor number
     currentFloor--;
 
@@ -148,10 +150,22 @@ void gameState::drawMap() {
 }
 
 void gameState::displayHUD() {
+    // Get the current health, max health, and doom values
+    int currentHealth = player.getHealth();
+    int maxHealth = player.getMaxHealth(); // Use the getter method
+    int doom = player.getDoom();
+
+    // Ensure health does not exceed max health
+    if (currentHealth > maxHealth) {
+        currentHealth = maxHealth;
+    }
+
+    // Display health and doom values
     char hudText[50];
-    sprintf(hudText, "Health: %d / 20 Doom: %d / 50", player.getHealth(), player.getDoom());
+    sprintf(hudText, "Health: %d / %d Doom: %d / 50", player.getHealth(), maxHealth, player.getDoom());
     outtextxy(10, 600, hudText);
 
+    // Display points
     char pointsText[50];
     sprintf(pointsText, "Points: %d", player.getGamePoints());
     outtextxy(300, 600, pointsText);
@@ -174,6 +188,7 @@ void gameState::gameLoop() {
         if (!player.isAlive()) {
             break;
         }
+        
     }
 }
 
@@ -289,6 +304,17 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
 
         getch(); // Wait for user input to continue
 
+        if (!enemy.isAlive()) {
+            player.doomDecrease(3);  // Doom decreases only if enemy is defeated
+            outtextxy(100, 300, (char*)"Enemy defeated!");
+        }
+
+        else if (player.doomed()) {
+            outtextxy(100, 300, (char*)"You have been defeated by Doom!");
+            getch();
+            break;  // End the game
+        }
+
         // Return to the main game screen
         cleardevice();
         drawMap();
@@ -391,7 +417,7 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         outtextxy(100, 300, (char*)"You were defeated by the Boss!");
     }
 
-    getch(); // Wait for user input to continue
+    getch(); // Wait for user input to continueaaaaaaaaaaaaaaaaa
 
     // Return to the main game screen
     cleardevice();
