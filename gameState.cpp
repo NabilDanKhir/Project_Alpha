@@ -271,6 +271,8 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
             if (enemy.isAlive()) {
                 player.takeDamage(enemy.attack());
             } else {
+                player.doomDecrease(1);  // Doom decreases only if enemy is defeated
+                outtextxy(100, 300, (char*)"Enemy defeated!");
                 player.addGamePoints(5); // Add 5 points when enemy is defeated
             }
             break;
@@ -303,12 +305,7 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
 
         getch(); // Wait for user input to continue
 
-        if (!enemy.isAlive()) {
-            player.doomDecrease(3);  // Doom decreases only if enemy is defeated
-            outtextxy(100, 300, (char*)"Enemy defeated!");
-        }
-
-        else if (player.doomed()) {
+        if (player.doomed()) {
             outtextxy(100, 300, (char*)"You have been defeated by Doom!");
             endGame();
             break;  // End the game
