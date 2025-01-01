@@ -14,7 +14,7 @@ class MainCharacter {
 		int health;
 		int doomCounter;
 		int maxHealth = 10;
-		const int doomLimit = 50;
+		const int doomLimit = 30;
 		int inventory[5];
 		Stats stats;
 
@@ -31,7 +31,7 @@ class MainCharacter {
 		void doomDecrease(int amount);
 
 		int getHealth();
-		int getDoom();
+		int getDoom() const;
 		Position getMCPosition() const;
 		void takeDamage(int damage);
     	int attack() const;

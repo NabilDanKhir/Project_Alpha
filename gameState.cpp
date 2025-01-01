@@ -43,6 +43,8 @@ void gameState::transitionToNextFloor() {
         return; // Do not transition to the next floor
     }
 
+    savedDoomCounter = player.getDoom();
+
     // Decrease the floor number
     currentFloor--;
 
@@ -183,6 +185,11 @@ void gameState::gameLoop() {
         if (!player.isAlive()) {
             break;
         }
+        
+        else if (player.doomed()) {
+            outtextxy(100, 300, (char*)"You have been defeated by Doom!");
+            break;  // End the game
+        }
     }
 }
 
@@ -295,6 +302,11 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
 
         getch(); // Wait for user input to continue
 
+        if (!enemy.isAlive()) {
+            player.doomDecrease(3);  // Doom decreases only if enemy is defeated
+            outtextxy(100, 300, (char*)"Enemy defeated!");
+        }
+
         // Return to the main game screen
         cleardevice();
         drawMap();
@@ -394,7 +406,7 @@ void gameState::battleScreenBoss(Boss& boss, MainCharacter& player) {
         outtextxy(100, 300, (char*)"You were defeated by the Boss!");
     }
 
-    getch(); // Wait for user input to continue
+    getch(); // Wait for user input to continueaaaaaaaaaaaaaaaaa
 
     // Return to the main game screen
     cleardevice();
