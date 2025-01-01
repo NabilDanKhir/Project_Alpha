@@ -1,6 +1,8 @@
 #include "gameState.h"
+#include "item.h"
 #include <graphics.h>  
 #include <cstdlib>
+#include <set>
 #include <ctime>
 
 gameState::gameState(MainCharacter& player) : player(player), currentFloor(5) { // Initialize player at position (1, 1)
@@ -34,14 +36,11 @@ gameState::gameState(MainCharacter& player) : player(player), currentFloor(5) { 
     loadSprites();
     std::srand(std::time(0)); // Seed for random number generation
     placeEnemiesRandomly();
+    placeItemsRandomly();
 }
 
 //Go NextFLoor
 void gameState::transitionToNextFloor() {
-    // Check if the current floor is already 0
-   /* if (currentFloor == 1) {
-        return; // Do not transition to the next floor
-    }*/
 
     // Decrease the floor number
     currentFloor--;
@@ -107,6 +106,7 @@ void gameState::generateNewFloor() {
 
     // Place enemies randomly on the new map
     placeEnemiesRandomly();
+    placeItemsRandomly();
 
     // Reload sprites or any other floor-specific assets
     loadSprites();
@@ -133,6 +133,20 @@ void gameState::loadSprites() {
     albabSprite = malloc(size);
     getimage(0, 0, 16, 16, albabSprite);
     cleardevice();
+
+    // Load medkit sprite
+    readimagefile("asset/Medical.bmp", 0, 0, 16, 16);
+    size = imagesize(0, 0, 16, 16);
+    medicalSprite = malloc(size);
+    getimage(0, 0, 16, 16, medicalSprite);
+    cleardevice();
+
+    // Load syringe sprite
+    readimagefile("asset/Syringe.bmp", 0, 0, 16, 16);
+    size = imagesize(0, 0, 16, 16);
+    syringeSprite = malloc(size);
+    getimage(0, 0, 16, 16, syringeSprite);
+    cleardevice();
 }
 
 
@@ -147,6 +161,10 @@ void gameState::drawMap() {
             if (mapY < 20 && mapX < 20) { // Ensure within bounds
                 if (mapX == 18 && mapY == 2) {
                     putimage(x * cellSize, y * cellSize, albabSprite, COPY_PUT);
+                } else if (map[mapY][mapX] == 'M') {
+                    putimage(x * cellSize, y * cellSize, medicalSprite, COPY_PUT);
+                } else if (map[mapY][mapX] == 'S') {
+                     putimage(x * cellSize, y * cellSize, syringeSprite, COPY_PUT);
                 } else {
                     char symbol[2] = { map[mapY][mapX], '\0' };
                     outtextxy(x * cellSize, y * cellSize, symbol);
@@ -170,6 +188,8 @@ void gameState::drawMap() {
         int scaledSize = cellSize;
         putimage(bossScaledX, bossScaledY, bossSprite1, COPY_PUT);
     }
+
+    
 }
 
 void gameState::displayHUD() {
@@ -287,6 +307,9 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
         case '3':
             // Item logic (to be implemented)
             outtextxy(100, 300, (char*)"You chose to use an Item!");
+            if (enemy.isAlive()){
+                player.takeDamage(enemy.attack());
+            }
             player.heal(5); // Heal the player by 5 HP
             break;
         case '4': // Run
@@ -454,6 +477,48 @@ void gameState::placeEnemiesRandomly() {
     }
 }
 
+void gameState::placeMedkitRandomly(std::set<std::pair<int, int>>& usedPositions) {
+    for (int i = 0; i < MAX_MEDKIT; ++i) {
+        int x, y;
+        std::pair<int, int> position;
+        do {
+            x = std::rand() % MAP_WIDTH;
+            y = std::rand() % MAP_HEIGHT;
+            position = std::make_pair(x, y);
+        } while (usedPositions.find(position) != usedPositions.end());
+        
+        usedPositions.insert(position);
+        medkit[i] = Medkit(x, y);
+        medkitPlaced[i] = true;
+        Position medkitPos = medkit[i].getMedKitPosition();
+        map[medkitPos.y][medkitPos.x] = 'M'; // Represent medkit on the map
+    }
+}
+
+void gameState::placeSyringeRandomly(std::set<std::pair<int, int>>& usedPositions) {
+    for (int i = 0; i < MAX_SYRINGE; ++i) {
+        int x, y;
+        std::pair<int, int> position;
+        do {
+            x = std::rand() % MAP_WIDTH;
+            y = std::rand() % MAP_HEIGHT;
+            position = std::make_pair(x, y);
+        } while (usedPositions.find(position) != usedPositions.end());
+        
+        usedPositions.insert(position);
+        syringe[i] = Syringe(x, y);
+        syringePlace[i] = true;
+        Position syringePos = syringe[i].getSyringePosition();
+        map[syringePos.y][syringePos.x] = 'S'; // Represent syringe on the map
+    }
+}
+
+void gameState::placeItemsRandomly() {
+    std::set<std::pair<int, int>> usedPositions;
+    placeMedkitRandomly(usedPositions);
+    placeSyringeRandomly(usedPositions);
+}
+
 void gameState::checkRandomEncounter() {
     for (int i = 0; i < MAX_ENTITY; ++i) {
         if (!enemyPlaced[i] && (std::rand() % 100 < 40)) { // 10% chance to place an enemy
@@ -517,6 +582,29 @@ void gameState::readInput(char input) {
             player.addGamePoints(20);
         }
         return;
+    }
+
+    // Check for collision with medkits after player moves
+    for (int i = 0; i < MAX_MEDKIT; ++i) {
+        if (medkitPlaced[i]) {
+            Position medkitPos = medkit[i].getMedKitPosition();
+            if (mcPos.x == medkitPos.x && mcPos.y == medkitPos.y) {
+                player.heal(medkit[i].getAmountHeal());
+                medkitPlaced[i] = false; // Remove medkit after use
+                map[medkitPos.y][medkitPos.x] = '.'; // Clear medkit from map
+            }
+        }
+    }
+
+    for (int i = 0; i < MAX_SYRINGE; ++i) {
+        if (syringePlace[i]) {
+            Position syringePos = syringe[i].getSyringePosition();
+            if (mcPos.x == syringePos.x && mcPos.y == syringePos.y) {
+                player.doomDecrease(syringe[i].getAmountDoomDec());
+                syringePlace[i] = false; // Remove medkit after use
+                map[syringePos.y][syringePos.x] = '.'; // Clear medkit from map
+            }
+        }
     }
 
     // Update the viewport

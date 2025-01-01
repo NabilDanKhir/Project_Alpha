@@ -144,6 +144,13 @@ void MainCharacter::heal(int amount)
     }
 }
 
+void MainCharacter::decreaseDoom(int amount){
+    doomCounter -= amount;
+    if (doomCounter < doomLimit) {
+        health = doomLimit;
+    }
+}
+
 void MainCharacter::recalculateHealth() {
     // Calculate new max health based on intelligence
     int newMaxHealth = maxHealth + stats.getIntelligence() * 2; // For example, 2 extra health per intelligence point

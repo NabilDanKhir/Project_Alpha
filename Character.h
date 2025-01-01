@@ -55,6 +55,7 @@ class MainCharacter {
 		void displayStats() const;
 		void addGamePoints(int pts);
 		void heal(int amount);
+		void decreaseDoom (int amount);
 
     	int getGamePoints() const {
 			return gamePoints;

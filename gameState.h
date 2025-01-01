@@ -1,11 +1,19 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
+
+#define MAP_WIDTH 20
+#define MAP_HEIGHT 10
 #include <graphics.h>
+#include <vector>
+#include <set>
 #include "Character.h"
 #include "Enemy.h"
+#include "item.h"
 
 const int MAX_ENTITY = 5;
+const int MAX_MEDKIT = 1;
+const int MAX_SYRINGE = 1;
 
 class gameState {
 private:
@@ -23,9 +31,17 @@ private:
     void* mobSprite;
     void* bossSprite1;
     void* albabSprite;
+    void* medicalSprite;
+    void* syringeSprite;
 
     //NEW BOSS
     Boss boss;
+    
+    Medkit medkit[MAX_MEDKIT];
+    bool medkitPlaced[MAX_MEDKIT];
+
+    Syringe syringe[MAX_SYRINGE];
+    bool syringePlace[MAX_SYRINGE];
 
 public:
     gameState(MainCharacter& player);
@@ -47,6 +63,10 @@ public:
     void placeEnemiesRandomly();
     void checkRandomEncounter();
     
+    void placeMedkitRandomly(std::set<std::pair<int, int>>& usedPositions);
+    void placeSyringeRandomly(std::set<std::pair<int, int>>& usedPositions);
+    void placeItemsRandomly();
+
     void endGame();
 };
 
