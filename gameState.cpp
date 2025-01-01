@@ -295,8 +295,8 @@ void gameState::battleScreen(Enemy& enemy, MainCharacter& player) {
             if (enemy.isAlive()) {
                 player.takeDamage(enemy.attack());
             } else {
+                outtextxy(100, 335, (char*)"Enemy defeated!");
                 player.doomDecrease(1);  // Doom decreases only if enemy is defeated
-                outtextxy(100, 300, (char*)"Enemy defeated!");
                 player.addGamePoints(5); // Add 5 points when enemy is defeated
             }
             break;
@@ -518,10 +518,10 @@ void gameState::placeMedkitRandomly(std::set<std::pair<int, int>>& usedPositions
         int x, y;
         std::pair<int, int> position;
         do {
-            x = std::rand() % MAP_WIDTH;
-            y = std::rand() % MAP_HEIGHT;
+            x = std::rand() % (20 - 2) + 1; // Ensure within wall bounds
+            y = std::rand() % (10 - 2) + 1; // Ensure within wall bounds
             position = std::make_pair(x, y);
-        } while (usedPositions.find(position) != usedPositions.end());
+        } while (usedPositions.find(position) != usedPositions.end() || map[y][x] == '#');
         
         usedPositions.insert(position);
         medkit[i] = Medkit(x, y);
@@ -536,10 +536,10 @@ void gameState::placeSyringeRandomly(std::set<std::pair<int, int>>& usedPosition
         int x, y;
         std::pair<int, int> position;
         do {
-            x = std::rand() % MAP_WIDTH;
-            y = std::rand() % MAP_HEIGHT;
+            x = std::rand() % (20 - 2) + 1; // Ensure within wall bounds
+            y = std::rand() % (10 - 2) + 1; // Ensure within wall bounds
             position = std::make_pair(x, y);
-        } while (usedPositions.find(position) != usedPositions.end());
+        } while (usedPositions.find(position) != usedPositions.end() || map[y][x] == '#');
         
         usedPositions.insert(position);
         syringe[i] = Syringe(x, y);

@@ -1,9 +1,6 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
-
-#define MAP_WIDTH 20
-#define MAP_HEIGHT 10
 #include <graphics.h>
 #include <vector>
 #include <set>
